@@ -66,7 +66,7 @@ for plugin_dir in plugins/*; do
 done
 
 # Add .zshrc
-cp -f .zshrc $HOME/.zshrc
+cp -f jm.zshrc $HOME/.zshrc
 
 # Add homebrew installs
 brew update
