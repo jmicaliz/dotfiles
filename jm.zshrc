@@ -115,6 +115,9 @@ export PYENV_VIRTUALENV_DISABLE_PROMPT=1
 eval "$(pyenv init - zsh)"
 eval "$(pyenv virtualenv-init -)"
 
+# poetry
+export POETRY_VIRTUALENVS_CREATE=false
+
 # starship
 eval "$(starship init zsh)"
 
