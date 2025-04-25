@@ -76,6 +76,10 @@ brew bundle --file ./Brewfile
 mkdir -p $HOME/.config 
 cp -f starship.toml $HOME/.config/starship.toml
 
+# Add tlrc toml
+mkdir -p $HOME/.config/tlrc
+cp -f tlrc_config.toml $HOME/.config/tlrc/config.toml
+
 # Add poetry completions:
 mkdir -p $HOME/.oh-my-zsh/custom/plugins/poetry
 poetry completions zsh > $HOME/.oh-my-zsh/custom/plugins/poetry/_poetry
