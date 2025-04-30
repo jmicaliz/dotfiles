@@ -6,7 +6,7 @@ cd "$(dirname "${BASH_SOURCE}")";
 # If debian-based system, install some necessary libraries
 if [ -f /etc/debian_version ]; then
     echo "Installing necessary libraries for Debian-based systems..."
-    sudo apt update && sudo apt-get install -y build-essential procps curl file git
+    sudo apt update && sudo apt install -y build-essential procps curl file git
 fi
 
 # Clone the repository
@@ -86,7 +86,7 @@ current_python=$(python --version 2>&1 | awk '{print $2}')
 if [ "$current_python" != "$latest_python" ]; then
     if [ -f /etc/debian_version ]; then
         sudo apt update
-        sudo apt install build-essential libssl-dev zlib1g-dev \
+        sudo apt install -y build-essential libssl-dev zlib1g-dev \
             libbz2-dev libreadline-dev libsqlite3-dev curl git \
             libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
     fi
