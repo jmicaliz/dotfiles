@@ -13,20 +13,20 @@ jm_print_colors(){
 }
 
 jm_git_commit(){
-  mm = ""
-  branch = ""
+  mm=""
+  branch=""
 
   if [ $# -eq 2 ]; then
-    mm = $1
-    branch = $2
+    mm="$1"
+    branch="$2"
   elif [ $# -eq 1 ]; then
-    mm = "main"
-    branch = $1
+    mm="main"
+    branch="$1"
   else
     echo "Need to supply at least branch name if using main"
   fi
 
-  if [ -n "$branch"]; then
+  if [ -n "$branch" ]; then
     git checkout $mm
     git pull
     git checkout $branch
