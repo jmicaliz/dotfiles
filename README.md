@@ -58,3 +58,4 @@ The following tools are installed via the `Brewfile`:
 
 ## Notes
 - This setup assumes you are running Linux (Ubuntu). Some steps may need to be adjusted for other operating systems.
+- Also, need to install a [Nerd Font](https://www.nerdfonts.com/font-downloads) to see all the cool icons.
