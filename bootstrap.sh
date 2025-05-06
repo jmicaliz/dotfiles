@@ -80,6 +80,12 @@ cp -f starship.toml $HOME/.config/starship.toml
 mkdir -p $HOME/.config/tlrc
 cp -f tlrc_config.toml $HOME/.config/tlrc/config.toml
 
+# Add snowflake toml
+mkdir -p $HOME/.snowflake
+cp -f snowflake_config.toml $HOME/.snowflake/config.toml
+chmod 0600 $HOME/.snowflake/config.toml
+snow --install-completion
+
 # Add poetry completions:
 mkdir -p $HOME/.oh-my-zsh/custom/plugins/poetry
 poetry completions zsh > $HOME/.oh-my-zsh/custom/plugins/poetry/_poetry

@@ -1,0 +1,12 @@
+[cli.logs]
+save_logs = true
+path = "$HOME/.snowflake/logs"
+level = "info"
+
+[connections.bbr_snowflake_connection]
+account = "xta53367.east-us-2.privatelink"
+user = "JCMADMIN@BBRPARTNERS.COM"
+role = ""
+warehouse = ""
+database = ""
+schema = ""

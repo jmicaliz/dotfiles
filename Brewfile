@@ -22,3 +22,5 @@ brew "ripgrep"
 
 brew "kona"
 brew "rlwrap"
+
+brew "snowflake-cli"
