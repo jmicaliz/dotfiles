@@ -23,7 +23,7 @@ You might need to create an ssh key. Look [here](https://docs.github.com/en/auth
 Clone this repository to your preferred location (e.g., `~/.dotfiles`) and run the bootstrap script:
 
 ```shell
-git clone https://github.com/jmicaliz/dotfiles.git ~/.dotfiles
+git clone https://github.com/jcmicalizzi/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 source bootstrap.sh
 ```

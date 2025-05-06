@@ -1,6 +1,5 @@
 [cli.logs]
 save_logs = true
-path = "$HOME/.snowflake/logs"
 level = "info"
 
 [connections.bbr_snowflake_connection]
