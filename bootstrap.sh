@@ -80,15 +80,29 @@ cp -f starship.toml $HOME/.config/starship.toml
 mkdir -p $HOME/.config/tlrc
 cp -f tlrc_config.toml $HOME/.config/tlrc/config.toml
 
+# Add poetry completions:
+mkdir -p $HOME/.oh-my-zsh/custom/plugins/poetry
+poetry completions zsh > $HOME/.oh-my-zsh/custom/plugins/poetry/_poetry
+
 # Add snowflake toml
 mkdir -p $HOME/.snowflake
 cp -f snowflake_config.toml $HOME/.snowflake/config.toml
 chmod 0600 $HOME/.snowflake/config.toml
-snow --install-completion
 
-# Add poetry completions:
-mkdir -p $HOME/.oh-my-zsh/custom/plugins/poetry
-poetry completions zsh > $HOME/.oh-my-zsh/custom/plugins/poetry/_poetry
+# Create RSA key if it doesn't exist
+if [ ! -f "$HOME/.rsa/rsa_key.pub" ]; then
+    echo "Creating RSA key..."
+    mkdir -p $HOME/.rsa
+    openssl genrsa 2048 | openssl pkcs8 -topk8 -inform PEM -out $HOME/.rsa/rsa_key.p8 -nocrypt
+    openssl rsa -in $HOME/.rsa/rsa_key.p8 -pubout -out $HOME/.rsa/rsa_key.pub
+fi
+
+# Create SSH key if it doesn't exist
+if [ ! -f "$HOME/.ssh/id_ed25519.pub" ]; then
+    echo "Creating SSH key..."
+    mkdir -p $HOME/.ssh
+    ssh-keygen -t ed25519 -C "jcmicalizzi@bbrpartners.com" -f $HOME/.ssh/id_ed25519 -q -N ""
+fi
 
 # Install latest Python and set as default
 latest_python=$(pyenv install --list | grep -E "^\s*3\.[0-9]+\.[0-9]+$" | tail -1 | tr -d ' ')
