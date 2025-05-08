@@ -89,21 +89,6 @@ mkdir -p $HOME/.snowflake
 cp -f snowflake_config.toml $HOME/.snowflake/config.toml
 chmod 0600 $HOME/.snowflake/config.toml
 
-# Create RSA key if it doesn't exist
-if [ ! -f "$HOME/.rsa/rsa_key.pub" ]; then
-    echo "Creating RSA key..."
-    mkdir -p $HOME/.rsa
-    openssl genrsa 2048 | openssl pkcs8 -topk8 -inform PEM -out $HOME/.rsa/rsa_key.p8 -nocrypt
-    openssl rsa -in $HOME/.rsa/rsa_key.p8 -pubout -out $HOME/.rsa/rsa_key.pub
-fi
-
-# Create SSH key if it doesn't exist
-if [ ! -f "$HOME/.ssh/id_ed25519.pub" ]; then
-    echo "Creating SSH key..."
-    mkdir -p $HOME/.ssh
-    ssh-keygen -t ed25519 -C "jcmicalizzi@bbrpartners.com" -f $HOME/.ssh/id_ed25519 -q -N ""
-fi
-
 # Install latest Python and set as default
 latest_python=$(pyenv install --list | grep -E "^\s*3\.[0-9]+\.[0-9]+$" | tail -1 | tr -d ' ')
 current_python=$(python --version 2>&1 | awk '{print $2}')
