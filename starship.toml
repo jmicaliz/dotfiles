@@ -1,17 +1,22 @@
 format = """\
-[](fg:#7DF9AA bg:#1C3A5E)\
-$time\
-[](fg:#1C3A5E bg:#3B76F0)\
+[](fg:#3B76F0 bg:#002b36)\
 $directory\
-[](fg:#3B76F0 bg:#FCF392)\
 $git_branch\
 $git_status\
 $git_metrics\
-[](fg:#FCF392 bg:green)\
 $python\
-[](fg:green bg:#002b36)\
+$docker_context\
+$hostname\
 $character\
 """
+
+right_format = """\
+$cmd_duration\
+$time\
+[](fg:#002b36 bg:#1C3A5E)\
+"""
+
+continuation_prompt = '[ ➜➜](bold green) '
 
 [directory]
 format = "[ 󰝰 $path ]($style)"
@@ -19,7 +24,10 @@ style = "fg:#E4E4E4 bg:#3B76F0"
 read_only = " 󰌾"
 
 [git_branch]
-format = '[ $symbol$branch(:$remote_branch) ]($style)'
+format = """\
+[](fg:#FCF392 bg:#3B76F0)\
+[ $symbol$branch(:$remote_branch) ]($style)\
+"""
 symbol = "  "
 style = "fg:#1C3A5E bg:#FCF392"
 
@@ -34,8 +42,12 @@ deleted_style = "fg:bright-red bg:235"
 disabled = false
 
 [cmd_duration]
-format = "[  $duration ]($style)"
-style = "fg:bright-white bg:18"
+format = """\
+[](fg:#d9ba0d bg:#002b36)\
+[ 󰅒 $duration ]($style)\
+[](fg:#1C3A5E bg:#d9ba0d)\
+"""
+style = "fg:#1f1f1e bg:#d9ba0d"
 
 [character]
 success_symbol = '[ ➜](bold green) '
@@ -45,7 +57,7 @@ error_symbol = '[ ✗](#E84D44) '
 disabled = false
 time_format = "%R" # Hour:Minute Format
 style = "bg:#1d2230"
-format = '[[ 󱑍 $time ](bg:#1C3A5E fg:#8DFBD2)]($style)'
+format = '[[ $time 󱑍 ](bg:#1C3A5E fg:#8DFBD2)]($style)'
 
 [aws]
 symbol = "  "
@@ -103,7 +115,14 @@ format = "[ $symbol$branch ]($style)"
 symbol = " "
 
 [hostname]
+format = """\
+[ $hostname ]($style)\
+[](fg:#474646 bg:#002b36)\
+"""
+style = 'fg:white bg:#474646'
+ssh_only = false
 ssh_symbol = " "
+aliases = {'BBR-DK3KgXPNoSF' = '󰨡  ', 'jmicalizzi-v2' = '  ', 'jmicalizzi-airflow-dev' = '󰫖  '}
 
 [java]
 symbol = " "
@@ -197,7 +216,10 @@ symbol = " "
 [python]
 symbol = " "
 style = 'black bg:green'	
-format = '[ ${symbol} ${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+format = """\
+[](fg:green bg:#FCF392)\
+[ ${symbol} ${pyenv_prefix}(${version} )(\\($virtualenv\\) )]($style)\
+"""
 
 [rlang]
 symbol = "󰟔 "
