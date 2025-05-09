@@ -6,6 +6,7 @@ brew "xz"
 brew "zlib" 
 brew "tcl-tk@8"
 brew "libb2"
+brew "tmux"
 
 brew "starship"
 
