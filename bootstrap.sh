@@ -82,7 +82,7 @@ cp -f ./configs/direnv.toml $HOME/.config/direnv/direnv.toml
 
 # Add tlrc toml
 mkdir -p $HOME/.config/tlrc
-cp -f tlrc_config.toml $HOME/.config/tlrc/config.toml
+cp -f ./configs/tlrc.toml $HOME/.config/tlrc/config.toml
 
 # Add poetry completions:
 mkdir -p $HOME/.oh-my-zsh/custom/plugins/poetry
@@ -90,7 +90,7 @@ poetry completions zsh > $HOME/.oh-my-zsh/custom/plugins/poetry/_poetry
 
 # Add snowflake toml
 mkdir -p $HOME/.snowflake
-cp -f snowflake_config.toml $HOME/.snowflake/config.toml
+cp -f ./configs/snowflake.toml $HOME/.snowflake/config.toml
 chmod 0600 $HOME/.snowflake/config.toml
 
 # Install latest Python and set as default
