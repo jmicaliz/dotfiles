@@ -123,3 +123,6 @@ eval "$(starship init zsh)"
 
 #fzf
 source <(fzf --zsh)
+
+# direnv
+eval "$(direnv hook zsh)"
