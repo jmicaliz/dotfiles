@@ -122,7 +122,7 @@ format = """\
 style = 'fg:white bg:#474646'
 ssh_only = false
 ssh_symbol = " "
-aliases = {'BBR-DK3KgXPNoSF' = '󰨡  ', 'jmicalizzi-v2' = '  ', 'jmicalizzi-airflow-dev' = '󰫖  '}
+aliases = {'BBR-DK3KgXPNoSF' = '󰨡  ', 'jmicalizzi-v2' = '  ', 'jmicalizzi-airflow-dev' = '󰫖  ', 'JoelHomePC23' = '󰨡  '}
 
 [java]
 symbol = " "

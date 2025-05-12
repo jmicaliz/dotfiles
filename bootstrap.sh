@@ -74,7 +74,11 @@ brew bundle --file ./Brewfile
 
 # Add starship toml
 mkdir -p $HOME/.config 
-cp -f starship.toml $HOME/.config/starship.toml
+cp -f ./configs/starship.toml $HOME/.config/starship.toml
+
+# Add direnv toml
+mkdir -p $HOME/.config/direnv
+cp -f ./configs/direnv.toml $HOME/.config/direnv/direnv.toml
 
 # Add tlrc toml
 mkdir -p $HOME/.config/tlrc
