@@ -25,3 +25,5 @@ brew "direnv"
 
 brew "kona"
 brew "rlwrap"
+
+brew "coder"
