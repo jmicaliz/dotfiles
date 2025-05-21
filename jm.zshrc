@@ -65,12 +65,16 @@ export ZSH="$HOME/.oh-my-zsh"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
+# PATH updates
+# homebrew
+export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git python vscode pyenv kona jm poetry docker docker-compose)
+plugins=(git python uv vscode kona jm docker docker-compose)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -102,21 +106,6 @@ fi
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-
-# homebrew
-export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
-
-# pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-
-export PYENV_VIRTUALENV_DISABLE_PROMPT=1
-
-eval "$(pyenv init - zsh)"
-eval "$(pyenv virtualenv-init -)"
-
-# poetry
-export POETRY_VIRTUALENVS_CREATE=false
 
 # starship
 eval "$(starship init zsh)"
