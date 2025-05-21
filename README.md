@@ -56,6 +56,19 @@ The following tools are installed via the `Brewfile`:
 - Utilities: `jq`, `httpie`, `pgcli`, `tlrc`
 - Additional tools: `kona`, `rlwrap`
 
+## How To Update Fork
+1. Ensure the upstream remote exists:
+
+   ```git remote -v```
+
+   Should see the `origin` and the `upstream` git URLs. If not, add with:
+
+   ```git remote add upstream https://<repo clone url>```
+2. `git fetch upstream`
+3. `git checkout main`
+4. `git rebase -i upstream/main`
+5. `git push origin main --force-with-lease`
+
 ## Notes
 - This setup assumes you are running Linux (Ubuntu). Some steps may need to be adjusted for other operating systems.
 - Also, need to install a [Nerd Font](https://www.nerdfonts.com/font-downloads) to see all the cool icons.
