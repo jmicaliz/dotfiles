@@ -10,9 +10,6 @@ brew "tmux"
 
 brew "starship"
 
-brew "pyenv"
-brew "pyenv-virtualenv"
-brew "poetry"
 brew "uv"
 
 brew "fzf"
