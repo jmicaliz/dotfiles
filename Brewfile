@@ -24,3 +24,5 @@ brew "kona"
 brew "rlwrap"
 
 brew "coder"
+
+brew "snowflake-cli"

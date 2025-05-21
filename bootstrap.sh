@@ -79,6 +79,16 @@ cp -f ./configs/starship.toml $HOME/.config/starship.toml
 mkdir -p $HOME/.config/direnv
 cp -f ./configs/direnv.toml $HOME/.config/direnv/direnv.toml
 
+# Add tlrc toml
+mkdir -p $HOME/.config/tlrc
+cp -f ./configs/tlrc.toml $HOME/.config/tlrc/config.toml
+
+# Add snowflake toml
+mkdir -p $HOME/.snowflake
+cp -f snowflake_config.toml $HOME/.snowflake/config.toml
+chmod 0600 $HOME/.snowflake/config.toml
+snow --install-completion
+
 # Make repos directory
 mkdir -p $HOME/repos
 
