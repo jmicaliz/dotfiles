@@ -60,7 +60,6 @@ fi
 # Install custom_commands
 for plugin_dir in plugins/*; do
     if [ -d "$plugin_dir" ]; then
-        mkdir -p "$HOME/.oh-my-zsh/custom/plugins/$plugin_dir"
         cp -r "$plugin_dir" "$HOME/.oh-my-zsh/custom/plugins"
     fi
 done
@@ -79,24 +78,6 @@ cp -f ./configs/starship.toml $HOME/.config/starship.toml
 # Add direnv toml
 mkdir -p $HOME/.config/direnv
 cp -f ./configs/direnv.toml $HOME/.config/direnv/direnv.toml
-
-# Add poetry completions:
-mkdir -p $HOME/.oh-my-zsh/custom/plugins/poetry
-poetry completions zsh > $HOME/.oh-my-zsh/custom/plugins/poetry/_poetry
-
-# Install latest Python and set as default
-latest_python=$(pyenv install --list | grep -E "^\s*3\.[0-9]+\.[0-9]+$" | tail -1 | tr -d ' ')
-current_python=$(python --version 2>&1 | awk '{print $2}')
-if [ "$current_python" != "$latest_python" ]; then
-    if [ -f /etc/debian_version ]; then
-        sudo apt update
-        sudo apt install -y build-essential libssl-dev zlib1g-dev \
-            libbz2-dev libreadline-dev libsqlite3-dev curl git \
-            libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
-    fi
-    pyenv install $latest_python
-    pyenv global $latest_python
-fi
 
 # Make repos directory
 mkdir -p $HOME/repos
