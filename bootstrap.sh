@@ -79,6 +79,9 @@ cp -f ./configs/starship.toml $HOME/.config/starship.toml
 mkdir -p $HOME/.config/direnv
 cp -f ./configs/direnv.toml $HOME/.config/direnv/direnv.toml
 
+# Add .gitconfig
+cp -f ./configs/.gitconfig $HOME/.gitconfig
+
 # Make repos directory
 mkdir -p $HOME/repos
 
