@@ -67,6 +67,8 @@ done
 # Add .zshrc
 cp -f jm.zshrc $HOME/.zshrc
 
+source $HOME/.zshrc
+
 # Add homebrew installs
 brew update
 brew bundle --file ./Brewfile
