@@ -17,7 +17,7 @@ if ! command -v brew &>/dev/null; then
     echo "Installing Homebrew..."
     NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-    if [ "$(uname)" == "Darwin" ]; then
+    if [ "$(uname)" = "Darwin" ]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
     else
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
@@ -29,7 +29,7 @@ fi
 # Install zsh
 if ! command -v zsh &>/dev/null; then
     echo "Installing zsh..."
-    if [ "$(uname)" == "Darwin" ]; then
+    if [ "$(uname)" = "Darwin" ]; then
         brew install zsh
     elif [ -f /etc/debian_version ]; then
         sudo apt update && sudo apt install -y zsh
@@ -66,8 +66,6 @@ done
 
 # Add .zshrc
 cp -f jm.zshrc $HOME/.zshrc
-
-source $HOME/.zshrc
 
 # Add homebrew installs
 brew update
