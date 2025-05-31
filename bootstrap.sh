@@ -42,7 +42,7 @@ if ! command -v zsh &>/dev/null; then
 fi
 
 # Change default shell to zsh
-if [ "$0" != "zsh" ]; then
+if [ "$SHELL" != "$(which zsh)" ]; then
     echo "Changing default shell to zsh..."
     chsh -s "$(which zsh)"
 else
