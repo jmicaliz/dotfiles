@@ -92,6 +92,13 @@ if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='nano'
 fi
 
+# Ensure that the shell is set to zsh
+if [[ -n $SHELL ]]; then
+  export SHELL="$(which zsh)"
+elif [[ ! "$SHELL" ]]; then
+  export SHELL="$(which zsh)"
+fi
+
 # Compilation flags
 # export ARCHFLAGS="-arch $(uname -m)"
 
