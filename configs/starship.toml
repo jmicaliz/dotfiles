@@ -5,6 +5,7 @@ $git_branch\
 $git_status\
 $git_metrics\
 $python\
+$terraform\
 $docker_context\
 $hostname\
 $character\
@@ -235,6 +236,14 @@ symbol = " "
 
 [swift]
 symbol = " "
+
+[terraform]
+symbol = " "
+style = 'black bg:purple'
+format = """\
+[](fg:purple bg:#FCF392)\
+[ $symbol$workspace ]($style)\
+"""
 
 [zig]
 symbol = " "
