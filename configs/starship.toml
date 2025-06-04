@@ -236,6 +236,14 @@ symbol = " "
 [swift]
 symbol = " "
 
+[terraform]
+symbol = " "
+style = 'black bg:purple'
+format = """\
+[](fg:purple bg:#FCF392)\
+[ $symbol$workspace ]($style)\
+"""
+
 [zig]
 symbol = " "
 
