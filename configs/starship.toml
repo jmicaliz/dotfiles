@@ -5,6 +5,7 @@ $git_branch\
 $git_status\
 $git_metrics\
 $python\
+$terraform\
 $docker_context\
 $hostname\
 $character\
