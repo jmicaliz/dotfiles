@@ -216,6 +216,7 @@ symbol = " "
 
 [python]
 symbol = " "
+python_binary = ['.venv/bin/python', 'python', 'python3', 'python2']
 style = 'black bg:green'	
 format = """\
 [](fg:green bg:#FCF392)\
