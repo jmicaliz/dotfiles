@@ -7,6 +7,7 @@ $git_metrics\
 $python\
 $terraform\
 $docker_context\
+$azure\
 $hostname\
 $character\
 """
@@ -25,10 +26,7 @@ style = "fg:#E4E4E4 bg:#3B76F0"
 read_only = " 󰌾"
 
 [git_branch]
-format = """\
-[](fg:#FCF392 bg:#3B76F0)\
-[ $symbol$branch(:$remote_branch) ]($style)\
-"""
+format = "[ $symbol$branch(:$remote_branch) ]($style)"
 symbol = "  "
 style = "fg:#1C3A5E bg:#FCF392"
 
@@ -37,7 +35,7 @@ format = '[$all_status]($style)'
 style = "fg:#1C3A5E bg:#FCF392"
 
 [git_metrics]
-format = "([+$added]($added_style))[]($added_style)"
+format = "([+$added]($added_style))[ ]($added_style)"
 added_style = "fg:#1C3A5E bg:#FCF392"
 deleted_style = "fg:bright-red bg:235"
 disabled = false
@@ -62,6 +60,12 @@ format = '[[ $time 󱑍 ](bg:#1C3A5E fg:#8DFBD2)]($style)'
 
 [aws]
 symbol = "  "
+
+[azure]
+disabled = false
+symbol = " "
+style = "bg:#007FFF"
+format = "[ $symbol($subscription) ]($style)"
 
 [buf]
 symbol = " "
@@ -218,10 +222,7 @@ symbol = " "
 symbol = " "
 python_binary = ['.venv/bin/python', 'python', 'python3', 'python2']
 style = 'black bg:green'	
-format = """\
-[](fg:green bg:#FCF392)\
-[ ${symbol} ${pyenv_prefix}(${version} )(\\($virtualenv\\) )]($style)\
-"""
+format = "[ ${symbol} ${pyenv_prefix}(${version} )(\\($virtualenv\\) )]($style)"
 
 [rlang]
 symbol = "󰟔 "
@@ -241,10 +242,7 @@ symbol = " "
 [terraform]
 symbol = " "
 style = 'black bg:purple'
-format = """\
-[](fg:purple bg:#FCF392)\
-[ $symbol$workspace ]($style)\
-"""
+format = "[ $symbol$workspace ]($style)"
 
 [zig]
 symbol = " "
