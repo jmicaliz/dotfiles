@@ -82,6 +82,9 @@ cp -f ./configs/direnv.toml $HOME/.config/direnv/direnv.toml
 # Add .gitconfig
 cp -f ./configs/.gitconfig $HOME/.gitconfig
 
+# Add .gitignore_global
+cp -f ./configs/.gitignore_global $HOME/.gitignore_global
+
 # Make repos directory
 mkdir -p $HOME/repos
 
