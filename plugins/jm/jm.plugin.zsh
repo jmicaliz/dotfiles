@@ -37,3 +37,6 @@ jm_git_commit(){
     echo "Don't forget to push when ready: git push -f origin $branch" 
   fi
 }
+
+alias jm_pyact='source .venv/bin/activate'
+alias jm_pydeact='deactivate'
