@@ -2,6 +2,7 @@ format = """\
 [](fg:#3B76F0 bg:#002b36)\
 $directory\
 $git_branch\
+$git_commit\
 $git_status\
 $git_metrics\
 $python\
