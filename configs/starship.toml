@@ -2,6 +2,7 @@ format = """\
 [](fg:#3B76F0 bg:#002b36)\
 $directory\
 $git_branch\
+$git_commit\
 $git_status\
 $git_metrics\
 $python\
@@ -27,6 +28,13 @@ read_only = " 󰌾"
 [git_branch]
 format = "[ $symbol$branch(:$remote_branch) ]($style)"
 symbol = "  "
+style = "fg:#1C3A5E bg:#FCF392"
+
+[git_commit]
+format = "[$tag]($style)"
+tag_symbol = '  '
+tag_disabled = false
+only_detached = false
 style = "fg:#1C3A5E bg:#FCF392"
 
 [git_status]
@@ -92,9 +100,6 @@ symbol = " "
 
 [fossil_branch]
 symbol = " "
-
-[git_commit]
-tag_symbol = '  '
 
 [golang]
 symbol = " "
