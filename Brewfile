@@ -20,6 +20,7 @@ brew "tlrc"
 brew "ripgrep"
 brew "direnv"
 brew "gh"
+brew "ncdu"
 
 brew "kona"
 brew "rlwrap"
