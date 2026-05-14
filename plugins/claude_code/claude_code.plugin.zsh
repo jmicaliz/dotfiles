@@ -1,0 +1,6 @@
+alias ccr='claude --resume'
+alias ccc='claude --continue'
+alias ccp='claude --print'
+alias cccommit='claude /commit'
+alias ccpr='claude /create-pr'
+alias ccw='claude --worktree'

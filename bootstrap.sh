@@ -85,6 +85,10 @@ cp -f ./configs/.gitconfig $HOME/.gitconfig
 # Add .gitignore_global
 cp -f ./configs/.gitignore_global $HOME/.gitignore_global
 
+# Add Claude Code settings
+mkdir -p $HOME/.claude
+cp -rf ./configs/.claude/* $HOME/.claude/
+
 # Make repos directory
 mkdir -p $HOME/repos
 

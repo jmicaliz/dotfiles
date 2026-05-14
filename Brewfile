@@ -21,7 +21,10 @@ brew "ripgrep"
 brew "direnv"
 brew "gh"
 
+brew "node"
 brew "kona"
 brew "rlwrap"
 
 brew "coder"
+
+cask "claude-code"
