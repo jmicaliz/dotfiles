@@ -60,7 +60,7 @@ fi
 # Install custom_commands
 for plugin_dir in plugins/*; do
     if [ -d "$plugin_dir" ]; then
-        cp -r "$plugin_dir" "$HOME/.oh-my-zsh/custom/plugins"
+        cp -rf "$plugin_dir" "$HOME/.oh-my-zsh/custom/plugins"
     fi
 done
 

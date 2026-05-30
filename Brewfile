@@ -1,31 +1,38 @@
+# Build dependencies
 brew "gcc"
-brew "openssl"
-brew "readline" 
-brew "sqlite3"
-brew "xz"
-brew "zlib" 
-brew "tcl-tk@8"
 brew "libb2"
+brew "openssl"
+brew "readline"
+brew "sqlite3"
+brew "tcl-tk@8"
+brew "xz"
+brew "zlib"
+
+# Shell & terminal
+brew "starship"
 brew "tmux"
 
-brew "starship"
-
+# Languages & runtimes
+brew "kona"
+brew "node"
+brew "rlwrap"
 brew "uv"
 
+# CLI utilities
 brew "fzf"
-brew "jq"
 brew "httpie"
-brew "pgcli"
-brew "tlrc"
+brew "jq"
+brew "ncdu"
 brew "ripgrep"
+brew "tlrc"
+
+# Development
+brew "ansible"
+brew "coder"
 brew "direnv"
 brew "gh"
-brew "ncdu"
+brew "pgcli"
+brew "terraform"
 
-brew "node"
-brew "kona"
-brew "rlwrap"
-
-brew "coder"
-
+# Apps
 cask "claude-code"
