@@ -6,7 +6,7 @@ cd "$(dirname "${BASH_SOURCE}")";
 # If debian-based system, install some necessary libraries
 if [ -f /etc/debian_version ]; then
     echo "Installing necessary libraries for Debian-based systems..."
-    sudo apt update && sudo apt install -y build-essential procps curl file git
+    sudo apt update && sudo apt install -y build-essential procps curl file git && sudo apt upgrade -y && sudo apt autoremove -y
 fi
 
 # Clone the repository
@@ -88,6 +88,38 @@ cp -f ./configs/.gitignore_global $HOME/.gitignore_global
 # Add Claude Code settings
 mkdir -p $HOME/.claude
 cp -rf ./configs/.claude/* $HOME/.claude/
+
+# Install VS Code
+if [ "$(uname)" = "Darwin" ]; then
+    VSCODE_USER_DIR="$HOME/Library/Application Support/Code/User"
+else
+    if ! command -v code &>/dev/null; then
+        echo "Installing VS Code..."
+        sudo snap install code --classic
+    else
+        echo "VS Code is already installed."
+    fi
+    VSCODE_USER_DIR="$HOME/.config/Code/User"
+fi
+
+# Copy VS Code settings
+mkdir -p "$VSCODE_USER_DIR"
+cp -f ./configs/vscode/settings.json "$VSCODE_USER_DIR/settings.json"
+
+# Install VS Code extensions
+# Newer VS Code Remote SSH uses ~/.vscode-server/code-<hash>; older used ~/.vscode-server/bin/.../code-server
+VSCODE_SERVER_BIN=$(find ~/.vscode-server -maxdepth 1 -name "code-*" -type f 2>/dev/null | head -1)
+if [ -z "$VSCODE_SERVER_BIN" ]; then
+    VSCODE_SERVER_BIN=$(find ~/.vscode-server/bin -maxdepth 3 -name "code-server" -not -path "*/legacy-mode/*" 2>/dev/null | head -1)
+fi
+if [ -n "$VSCODE_SERVER_BIN" ]; then
+    echo "Installing VS Code extensions..."
+    while IFS= read -r extension; do
+        "$VSCODE_SERVER_BIN" --install-extension "$extension" --force 2>&1 | grep -v "DeprecationWarning\|node --trace"
+    done < ./configs/vscode/extensions.txt
+else
+    echo "Skipping VS Code extension install — VS Code server not found (connect to this machine via VS Code first)."
+fi
 
 # Make repos directory
 mkdir -p $HOME/repos

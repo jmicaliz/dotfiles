@@ -38,3 +38,5 @@ brew "hashicorp/tap/terraform"
 
 # Apps
 cask "claude-code"
+
+cask "visual-studio-code"
