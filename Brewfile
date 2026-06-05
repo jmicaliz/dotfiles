@@ -15,6 +15,7 @@ brew "tmux"
 # Languages & runtimes
 brew "kona"
 brew "node"
+brew "fnm"
 brew "rlwrap"
 brew "uv"
 
@@ -27,12 +28,13 @@ brew "ripgrep"
 brew "tlrc"
 
 # Development
+tap "hashicorp/tap"
 brew "ansible"
 brew "coder"
 brew "direnv"
 brew "gh"
 brew "pgcli"
-brew "terraform"
+brew "hashicorp/tap/terraform"
 
 # Apps
 cask "claude-code"

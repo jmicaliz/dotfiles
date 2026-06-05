@@ -1,0 +1,42 @@
+{
+    "model": "sonnet",
+    "permissions": {
+        "allow": [
+            "Bash(find:*)",
+
+            "Bash(git add:*)",
+            "Bash(git branch:*)",
+            "Bash(git commit:*)",
+            "Bash(git diff:*)",
+            "Bash(git fetch:*)",
+            "Bash(git log:*)",
+            "Bash(git push:*)",
+            "Bash(git rebase:*)",
+            "Bash(git reset:*)",
+            "Bash(git status:*)",
+
+            "Bash(gh pr:*)",
+
+            "Bash(grep:*)",
+
+            "Bash(uv run:*)",
+
+            "mcp__claude_ai_Atlassian__atlassianUserInfo",
+            "mcp__claude_ai_Atlassian__createJiraIssue",
+            "mcp__claude_ai_Atlassian__editJiraIssue",
+            "mcp__claude_ai_Atlassian__getAccessibleAtlassianResources",
+            "mcp__claude_ai_Atlassian__getJiraIssue",
+            "mcp__claude_ai_Atlassian__getJiraIssueTypeMetaWithFields",
+            "mcp__claude_ai_Atlassian__getJiraProjectIssueTypesMetadata",
+            "mcp__claude_ai_Atlassian__getTransitionsForJiraIssue",
+            "mcp__claude_ai_Atlassian__searchConfluenceUsingCql",
+            "mcp__claude_ai_Atlassian__searchJiraIssuesUsingJql",
+            "mcp__claude_ai_Atlassian__transitionJiraIssue",
+
+            "WebSearch"
+        ],
+        "deny": [
+            "Bash(terraform apply:*)"
+        ]
+    }
+}

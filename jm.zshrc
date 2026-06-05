@@ -67,7 +67,11 @@ export ZSH="$HOME/.oh-my-zsh"
 
 # PATH updates
 # homebrew
-export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+if [[ "$(uname)" == "Darwin" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+else
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
 
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
