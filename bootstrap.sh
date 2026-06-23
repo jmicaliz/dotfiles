@@ -16,14 +16,15 @@ git pull origin main;
 if ! command -v brew &>/dev/null; then
     echo "Installing Homebrew..."
     NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-    if [ "$(uname)" = "Darwin" ]; then
-        eval "$(/opt/homebrew/bin/brew shellenv)"
-    else
-        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-    fi
 else
     echo "Homebrew is already installed."
+fi
+
+# Ensure brew is on PATH for the rest of this script (even if it was already installed)
+if [ "$(uname)" = "Darwin" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+else
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
 
 # Install zsh
@@ -71,6 +72,16 @@ cp -f jm.zshrc $HOME/.zshrc
 brew update
 brew bundle --file ./Brewfile
 
+# Install Claude Code on Linux (macOS installs it via the Brewfile cask)
+if [ "$(uname)" != "Darwin" ]; then
+    if ! command -v claude &>/dev/null; then
+        echo "Installing Claude Code..."
+        curl -fsSL https://claude.ai/install.sh | bash
+    else
+        echo "Claude Code is already installed."
+    fi
+fi
+
 # Add starship toml
 mkdir -p $HOME/.config 
 cp -f ./configs/starship.toml $HOME/.config/starship.toml
@@ -107,18 +118,23 @@ mkdir -p "$VSCODE_USER_DIR"
 cp -f ./configs/vscode/settings.json "$VSCODE_USER_DIR/settings.json"
 
 # Install VS Code extensions
-# Newer VS Code Remote SSH uses ~/.vscode-server/code-<hash>; older used ~/.vscode-server/bin/.../code-server
-VSCODE_SERVER_BIN=$(find ~/.vscode-server -maxdepth 1 -name "code-*" -type f 2>/dev/null | head -1)
-if [ -z "$VSCODE_SERVER_BIN" ]; then
-    VSCODE_SERVER_BIN=$(find ~/.vscode-server/bin -maxdepth 3 -name "code-server" -not -path "*/legacy-mode/*" 2>/dev/null | head -1)
+# Prefer the Remote SSH server binary (newer: ~/.vscode-server/code-<hash>; older: ~/.vscode-server/bin/.../code-server),
+# then fall back to a locally installed `code` CLI (e.g. desktop VS Code on macOS or Linux).
+VSCODE_BIN=$(find ~/.vscode-server -maxdepth 1 -name "code-*" -type f 2>/dev/null | head -1)
+if [ -z "$VSCODE_BIN" ]; then
+    VSCODE_BIN=$(find ~/.vscode-server/bin -maxdepth 3 -name "code-server" -not -path "*/legacy-mode/*" 2>/dev/null | head -1)
 fi
-if [ -n "$VSCODE_SERVER_BIN" ]; then
+if [ -z "$VSCODE_BIN" ] && command -v code &>/dev/null; then
+    VSCODE_BIN="code"
+fi
+if [ -n "$VSCODE_BIN" ]; then
     echo "Installing VS Code extensions..."
-    while IFS= read -r extension; do
-        "$VSCODE_SERVER_BIN" --install-extension "$extension" --force 2>&1 | grep -v "DeprecationWarning\|node --trace"
+    while IFS= read -r extension || [ -n "$extension" ]; do
+        [ -z "$extension" ] && continue
+        "$VSCODE_BIN" --install-extension "$extension" --force 2>&1 | grep -v "DeprecationWarning\|node --trace"
     done < ./configs/vscode/extensions.txt
 else
-    echo "Skipping VS Code extension install — VS Code server not found (connect to this machine via VS Code first)."
+    echo "Skipping VS Code extension install — no VS Code CLI found (open VS Code, or connect via Remote SSH, then re-run)."
 fi
 
 # Make repos directory

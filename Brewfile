@@ -36,7 +36,6 @@ brew "gh"
 brew "pgcli"
 brew "hashicorp/tap/terraform"
 
-# Apps
-cask "claude-code"
-
-cask "visual-studio-code"
+# Apps (casks are macOS-only; on Linux these are installed by bootstrap.sh)
+cask "claude-code" if OS.mac?
+cask "visual-studio-code" if OS.mac?
