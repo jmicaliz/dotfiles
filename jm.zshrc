@@ -93,9 +93,9 @@ source $ZSH/oh-my-zsh.sh
 export GIT_COMMIT_AUTHOR="Joel M <jmicaliz@gmail.com>"
 
 # Preferred editor for local and remote sessions
-if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='nano'
- else
+if command -v code &> /dev/null; then
+  export EDITOR='code -w'
+else
   export EDITOR='nano'
 fi
 
