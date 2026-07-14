@@ -35,6 +35,7 @@ brew "direnv"
 brew "gh"
 brew "pgcli"
 brew "hashicorp/tap/terraform"
+brew "rclone"
 
 # Apps (casks are macOS-only; on Linux these are installed by bootstrap.sh)
 cask "claude-code" if OS.mac?
