@@ -69,8 +69,13 @@ export ZSH="$HOME/.oh-my-zsh"
 # homebrew
 if [[ "$(uname)" == "Darwin" ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
-else
+elif [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+
+# User-local binaries (Claude Code installs itself to ~/.local/bin)
+if [[ -d "$HOME/.local/bin" ]]; then
+    export PATH="$HOME/.local/bin:$PATH"
 fi
 
 # Which plugins would you like to load?
@@ -121,11 +126,19 @@ fi
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+# Prompt and shell tools. Guarded so a partial bootstrap (e.g. a failed
+# `brew bundle`) leaves a usable shell instead of erroring on every prompt.
 # starship
-eval "$(starship init zsh)"
+if command -v starship &> /dev/null; then
+  eval "$(starship init zsh)"
+fi
 
 #fzf
-source <(fzf --zsh)
+if command -v fzf &> /dev/null; then
+  source <(fzf --zsh)
+fi
 
 # direnv
-eval "$(direnv hook zsh)"
+if command -v direnv &> /dev/null; then
+  eval "$(direnv hook zsh)"
+fi
