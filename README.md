@@ -62,6 +62,7 @@ SteamOS has a read-only root filesystem that is reverted by OS updates, so the b
 - Packages come from Homebrew — `/home/linuxbrew` is on the writable partition and survives updates, unlike anything `pacman` puts in `/usr`.
 - `chsh` can't be persisted (`/etc/passwd` and `/etc/shells` are on the read-only root), so `~/.bashrc` gets an `exec zsh` hand-off for interactive shells instead.
 - VS Code is installed as a per-user Flatpak, with settings at `~/.var/app/com.visualstudio.code/config/Code/User`.
+- There is no system C compiler and no durable way to install one, so the bootstrap symlinks Homebrew's `gcc-N` as `cc`/`gcc` inside the Homebrew prefix (Homebrew looks there before `/usr/bin`). Formulae without a Linux bottle are skipped rather than built from source — currently `hashicorp/tap/terraform`, so **terraform is not installed on SteamOS**.
 
 Before the first run, set a sudo password (the `deck` user has none by default), since Homebrew's installer needs it:
 

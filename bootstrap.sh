@@ -123,10 +123,37 @@ brew update
 
 # Homebrew 6+ requires non-official taps to be trusted before it will load
 # their formulae, and an untrusted tap aborts the entire bundle. Trust the taps
-# the Brewfile uses. (Guarded: `brew trust` does not exist before Homebrew 6.)
-if brew trust --help &>/dev/null; then
+# the Brewfile uses. (Guarded: `brew trust` does not exist before Homebrew 6.
+# SteamOS skips the hashicorp tap entirely — see the Brewfile.)
+if [ "$IS_STEAMOS" != true ] && brew trust --help &>/dev/null; then
     brew trust --tap hashicorp/tap
 fi
+
+# SteamOS has no system C compiler, and Homebrew's gcc only installs versioned
+# binaries (gcc-16, c++-16), so nothing satisfies Homebrew's compiler
+# requirement -- which breaks gcc's own post-install step. Homebrew looks in
+# HOMEBREW_PREFIX/bin before /usr/bin, so unversioned symlinks there fix it
+# without touching the read-only root.
+if [ "$IS_STEAMOS" = true ]; then
+    brew install gcc || true
+    BREW_BIN="$(brew --prefix)/bin"
+    # gcc-[0-9]* matches gcc-16 but not gcc-ar-16 / gcc-nm-16 / gcc-ranlib-16
+    GCC_VERSIONED="$(ls "$BREW_BIN"/gcc-[0-9]* 2>/dev/null | sort -V | tail -1)"
+    CXX_VERSIONED="$(ls "$BREW_BIN"/g++-[0-9]* 2>/dev/null | sort -V | tail -1)"
+    if [ -n "$GCC_VERSIONED" ] && [ ! -e "$BREW_BIN/cc" ]; then
+        echo "Linking $(basename "$GCC_VERSIONED") as cc/gcc (SteamOS has no system compiler)..."
+        ln -sf "$GCC_VERSIONED" "$BREW_BIN/cc"
+        ln -sf "$GCC_VERSIONED" "$BREW_BIN/gcc"
+        [ -n "$CXX_VERSIONED" ] && ln -sf "$CXX_VERSIONED" "$BREW_BIN/c++"
+        [ -n "$CXX_VERSIONED" ] && ln -sf "$CXX_VERSIONED" "$BREW_BIN/g++"
+        # gcc's post-install failed earlier for want of a compiler; retry now.
+        brew postinstall gcc || true
+    fi
+fi
+
+# A stale .incomplete file in the download cache makes an otherwise successful
+# pour report failure, and it persists until removed.
+rm -f "$(brew --cache)"/downloads/*.incomplete 2>/dev/null
 
 if ! brew bundle --file ./Brewfile; then
     echo "WARNING: 'brew bundle' failed — some Brewfile tools are missing. See the error above."
