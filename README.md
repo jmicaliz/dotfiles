@@ -1,5 +1,5 @@
 # dotfiles
-This repository contains my personal dotfiles and setup scripts for configuring a development environment on **macOS** and **Debian/Ubuntu Linux**. It automates the installation of essential tools, custom configurations, and shell enhancements, including `zsh` and `Oh My Zsh`. The same `bootstrap.sh` detects the OS and does the right thing on each platform.
+This repository contains my personal dotfiles and setup scripts for configuring a development environment on **macOS**, **Debian/Ubuntu Linux**, and **SteamOS (Steam Deck)**. It automates the installation of essential tools, custom configurations, and shell enhancements, including `zsh` and `Oh My Zsh`. The same `bootstrap.sh` detects the OS and does the right thing on each platform.
 
 ## Purpose
 The goal of this repository is to provide a streamlined way to set up a new development environment with my preferred tools and configurations. The `bootstrap.sh` script handles the installation of dependencies, configuration files, and custom plugins.
@@ -57,8 +57,20 @@ The following tools are installed via the `Brewfile`:
 - Utilities: `jq`, `httpie`, `pgcli`, `tlrc`
 - Additional tools: `kona`, `rlwrap`
 
+## SteamOS (Steam Deck)
+SteamOS has a read-only root filesystem that is reverted by OS updates, so the bootstrap sticks to `$HOME`:
+- Packages come from Homebrew — `/home/linuxbrew` is on the writable partition and survives updates, unlike anything `pacman` puts in `/usr`.
+- `chsh` can't be persisted (`/etc/passwd` and `/etc/shells` are on the read-only root), so `~/.bashrc` gets an `exec zsh` hand-off for interactive shells instead.
+- VS Code is installed as a per-user Flatpak, with settings at `~/.var/app/com.visualstudio.code/config/Code/User`.
+
+Before the first run, set a sudo password (the `deck` user has none by default), since Homebrew's installer needs it:
+
+```shell
+passwd
+```
+
 ## Notes
-- This setup supports macOS and Debian/Ubuntu Linux. On other distros (e.g. Fedora/RHEL) some steps fall back gracefully but may need manual adjustment.
-- On Linux, VS Code is installed via `snap` and Claude Code via the official install script; on macOS both are installed via Homebrew casks.
+- This setup supports macOS, Debian/Ubuntu Linux, and SteamOS. On other distros (e.g. Fedora/RHEL) some steps fall back gracefully but may need manual adjustment.
+- On Debian/Ubuntu, VS Code is installed via `snap`; on SteamOS via Flatpak; on macOS via a Homebrew cask. Claude Code uses the official install script everywhere except macOS, which uses a cask.
 - VS Code extensions install against a Remote SSH server binary if present, otherwise the local `code` CLI — so connect via VS Code (or open it locally) at least once.
 - Also, need to install a [Nerd Font](https://www.nerdfonts.com/font-downloads) to see all the cool icons.
