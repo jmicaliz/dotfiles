@@ -32,8 +32,13 @@ if [ -f /etc/debian_version ]; then
     sudo apt update && sudo apt install -y build-essential procps curl file git && sudo apt upgrade -y && sudo apt autoremove -y
 fi
 
-# Clone the repository
-git pull origin main;
+# Pull the latest changes for whichever branch is checked out
+DOTFILES_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+if [ -z "$DOTFILES_BRANCH" ] || [ "$DOTFILES_BRANCH" = "HEAD" ]; then
+    echo "Not on a branch — skipping git pull."
+else
+    git pull origin "$DOTFILES_BRANCH"
+fi
 
 # Install Homebrew
 if ! command -v brew &>/dev/null; then
