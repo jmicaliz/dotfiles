@@ -120,7 +120,17 @@ cp -f jm.zshrc $HOME/.zshrc
 
 # Add homebrew installs
 brew update
-brew bundle --file ./Brewfile
+
+# Homebrew 6+ requires non-official taps to be trusted before it will load
+# their formulae, and an untrusted tap aborts the entire bundle. Trust the taps
+# the Brewfile uses. (Guarded: `brew trust` does not exist before Homebrew 6.)
+if brew trust --help &>/dev/null; then
+    brew trust --tap hashicorp/tap
+fi
+
+if ! brew bundle --file ./Brewfile; then
+    echo "WARNING: 'brew bundle' failed — some Brewfile tools are missing. See the error above."
+fi
 
 # Install Claude Code on Linux (macOS installs it via the Brewfile cask)
 if [ "$(uname)" != "Darwin" ]; then
