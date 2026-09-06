@@ -17,8 +17,6 @@
     },
     "editor.renderWhitespace": "boundary",
     "editor.rulers": [120],
-    "editor.wordWrap": "wordWrapColumn",
-    "editor.wordWrapColumn": 120,
     "editor.multiCursorModifier": "alt",
     "editor.detectIndentation": false,
     "editor.tabSize": 4,
