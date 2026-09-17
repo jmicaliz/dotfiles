@@ -2,14 +2,14 @@
 
 ## Claude Rules
 
-Always follow the following:
-
-- BE CONCISE. Nothing too verbose. Outline and straight to the point.
-- Avoid em dash usage
+- Default to short answers in chat. State the result, then stop. Skip prefaces ("Great question!") and trailing summaries ("Let me know if...").
+- Use bullets or short paragraphs, not walls of prose.
+- Long-form output only when explicitly asked (reports, docs, plans).
+- Avoid em dash usage.
 
 ## Python projects
 
-For any Python work — existing repos or new projects — follow the `python-conventions` skill (uv, pyproject.toml, Makefile targets, Ruff, mypy, pytest, Click, loguru).
+For any Python work (existing repos or new projects), follow the `python-conventions` skill (uv, pyproject.toml, Makefile targets, Ruff, mypy, pytest, Click, loguru).
 
 ## Code comments
 

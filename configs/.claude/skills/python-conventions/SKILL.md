@@ -1,13 +1,13 @@
 ---
 name: python-conventions
-description: Default conventions for Python projects — uv for environments/packaging, pyproject.toml (no requirements.txt), Makefile targets for tasks, Ruff, mypy, pytest, Click, loguru. Use when working in any Python project (presence of pyproject.toml or .py files) or when setting up a new Python project, unless the repo specifies otherwise.
+description: Default conventions for Python projects: uv for environments/packaging, pyproject.toml (no requirements.txt), Makefile targets for tasks, Ruff, mypy, pytest, Click, loguru. Use when working in any Python project (presence of pyproject.toml or .py files) or when setting up a new Python project, unless the repo specifies otherwise.
 ---
 
 # Python project conventions
 
 Default conventions for all Python projects unless a repo says otherwise.
 
-There is a personal starter template (see any existing repo's `pyproject.toml`).
+Personal starter template: <https://github.com/jmicaliz/python_template/blob/main/pyproject.toml>.
 When working in a repo that already has a `pyproject.toml`, **adapt to it** rather
 than replacing it; the notes below are the defaults for new projects.
 
@@ -15,12 +15,12 @@ than replacing it; the notes below are the defaults for new projects.
 - Use **uv** for everything: environments, dependencies, locking, and Python versions.
 - Project metadata and dependencies live in **pyproject.toml** (PEP 621). Do **not** create `requirements.txt`.
 - Common commands:
-  - `uv add <pkg>` / `uv add --dev <pkg>` — add runtime / dev dependencies.
-  - `uv sync` — create/update the environment from the lockfile.
-  - `uv run <cmd>` — run inside the project environment (e.g. `uv run python -m pkg`, `uv run pytest`).
+  - `uv add <pkg>` / `uv add --dev <pkg>`: add runtime / dev dependencies.
+  - `uv sync`: create/update the environment from the lockfile.
+  - `uv run <cmd>`: run inside the project environment (e.g. `uv run python -m pkg`, `uv run pytest`).
 - Commit `uv.lock`.
 
-## Task commands — use the Makefile, not raw uv
+## Task commands: use the Makefile, not raw uv
 - Run tests, formatting, type checking, and validation through **Makefile targets**
   (`make test`, `make format`, `make typecheck`, `make check`, `make validate`),
   **not** ad-hoc `uv run ...` commands.
@@ -40,13 +40,17 @@ than replacing it; the notes below are the defaults for new projects.
 
 ## Testing
 - Use **pytest** (via `make test`).
-- Unit testing for most code, including mocks with sample (NON-PHI!) data
+- Unit testing for most code. Mocks use synthetic data only. Never real PHI, PII, or production data.
 
 ## CLI
 - Use Click for CLI
 
 ## Logging
 - Use **loguru** for logging
+
+## Project layout
+- Use src/ layout: package code under `src/<pkgname>/`, tests under `tests/`.
+- Single CLI entry point registered via `[project.scripts]` in pyproject.toml.
 
 ## Before considering a change done
 - Run `make check` (format + typecheck + test) and ensure it passes.

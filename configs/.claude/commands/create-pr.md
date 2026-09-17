@@ -2,12 +2,12 @@
 description: Creates a PR that squashes the commits into one, uses the PR template, and updates Jira.
 ---
 Follow this exact workflow to create a PR:
-1. Check if the current branch is up-to-date with the origin (and obviously exists in the origin). If it is, skip to step 5, otherwise continue.
-2. Rebase the branch with main.
-3. Squash all commits on the branch into one, keeping only the commit message from the first (oldest) commit.
-4. Force-push the squashed branch. Push is blocked by the administrator so provide a push command to run in another terminal.
-5. Analyze the feature branch and review the full diff against the main branch.
-6. If there are tests, documentation missing, or are `TODO` statements, request that they are created/updated before continuing.
-7. Fill in the PR template at `.github/pull_request_template.md` as the PR body, completing all sections based on the analysis. If no template exists, use a structured format with summary, changes made, testing, and checklist.
-8. Create the PR using `gh pr create` with the filled-in template.
-9. Move the associated Jira ticket, if it exists, to "In Review" status. Infer the ticket ID from the branch name (e.g., `DATENG-431-description` → `DATENG-431`).
+1. Verify the branch exists on origin. If not, push it first.
+2. Verify the branch is up-to-date with `origin/main`. If it is, skip to step 6.
+3. Rebase onto `origin/main`.
+4. Squash all commits on the branch into one, keeping the commit message from the first (oldest) commit. If that message is uninformative (contains `wip`, `fix`, `update`, or is under 10 characters), synthesize a new message from the branch name and diff, and present it for confirmation before squashing.
+5. Push the squashed branch with `git push --force-with-lease`. If the push fails (blocked by admin policy on this machine), print the exact command for the user to run in another terminal, then wait for them to confirm before continuing.
+6. Analyze the feature branch and review the full diff against the main branch.
+7. If tests are missing, documentation is missing, or `TODO` statements remain in the diff, ask the user to address them before continuing.
+8. Fill in the PR template at `.github/pull_request_template.md` as the PR body, completing all sections based on the analysis. If no template exists, use a structured format with summary, changes made, testing, and checklist.
+9. Create the PR using `gh pr create` with the filled-in template.
