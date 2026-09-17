@@ -36,7 +36,6 @@ brew "tlrc"
 # Development
 tap "hashicorp/tap" unless steamos
 brew "ansible"
-brew "coder"
 brew "direnv"
 brew "gh"
 brew "pgcli"
