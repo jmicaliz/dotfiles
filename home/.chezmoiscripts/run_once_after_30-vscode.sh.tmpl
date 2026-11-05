@@ -1,0 +1,13 @@
+{{ if ne .chezmoi.os "darwin" -}}
+#!/bin/bash
+set -euo pipefail
+{{ if .steamos -}}
+# snapd isn't available on SteamOS; a per-user Flatpak lives in $HOME and survives OS updates.
+if command -v flatpak &>/dev/null && ! flatpak info --user com.visualstudio.code &>/dev/null; then
+    flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
+    flatpak install -y --user flathub com.visualstudio.code
+fi
+{{- else -}}
+command -v code &>/dev/null || sudo snap install code --classic
+{{- end }}
+{{ end -}}

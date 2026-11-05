@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+guard="$HOME/.local/bin/dotfiles-guard"
+[ -x "$guard" ] || guard="$(git rev-parse --show-toplevel)/home/dot_local/bin/executable_dotfiles-guard"
+python3 "$guard" --staged
+
+markdown=$(git diff --cached --name-only --diff-filter=ACMR -- '*.md' '*.md.tmpl')
+[ -n "$markdown" ] || exit 0
+if command -v markdownlint-cli2 >/dev/null 2>&1; then
+    echo "$markdown" | tr '\n' '\0' | xargs -0 markdownlint-cli2
+else
+    echo "pre-commit: markdownlint-cli2 not installed, skipping Markdown lint" >&2
+fi

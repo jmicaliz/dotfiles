@@ -1,0 +1,92 @@
+# Build dependencies
+brew "gcc"
+brew "libb2"
+brew "openssl"
+brew "readline"
+brew "sqlite3"
+brew "tcl-tk@8"
+brew "xz"
+brew "zlib"
+
+# Shell & terminal
+brew "starship"
+brew "tmux"
+
+# Languages & runtimes
+brew "kona"
+brew "node"
+brew "fnm"
+brew "rlwrap"
+brew "uv"
+
+# CLI utilities
+brew "fzf"
+brew "httpie"
+brew "jq"
+brew "markdownlint-cli2"
+brew "ncdu"
+brew "ripgrep"
+brew "tlrc"
+
+# Development
+{{- if not .steamos }}
+tap "hashicorp/tap"
+brew "azure-cli"
+{{- end }}
+brew "ansible"
+brew "chezmoi"
+brew "direnv"
+brew "gh"
+brew "pgcli"
+{{- if not .steamos }}
+brew "hashicorp/tap/terraform"
+{{- end }}
+brew "rclone"
+brew "mcp-grafana"
+brew "gcx"
+brew "act"
+brew "playwright-cli"
+
+# Containers: the docker CLI drives podman on work machines and Docker Engine on personal ones
+{{- if and (eq .machine "personal") (eq .chezmoi.os "darwin") }}
+cask "docker-desktop"
+{{- else }}
+brew "docker"
+brew "docker-compose"
+{{- end }}
+{{- if and (eq .machine "work") (eq .chezmoi.os "darwin") }}
+brew "podman"
+{{- end }}
+
+{{- if eq .chezmoi.os "darwin" }}
+
+# Apps (casks are macOS-only; on Linux these are installed by run scripts)
+cask "bruno"
+cask "claude-code@latest"
+cask "copilot-cli"
+{{- if not (stat (joinPath .chezmoi.homeDir "Library/Fonts/MesloLGSNerdFont-Regular.ttf")) }}
+cask "font-meslo-lg-nerd-font"
+{{- end }}
+{{- if and (ne .machine "work") (not (stat "/Applications/Visual Studio Code.app")) }}
+cask "visual-studio-code"
+{{- end }}
+cask "notunes"
+{{- end }}
+{{- if eq .machine "personal" }}
+
+# Personal only
+brew "bitwarden-cli"
+{{- else if eq .machine "work" }}
+
+# Work only
+{{- $pfeTap := includeTemplate "keeper-field" (list .keeper.dotfiles "PFE_TAP") }}
+brew "keeper-commander"
+tap "databricks/tap"
+tap "{{ $pfeTap }}"
+brew "databricks/tap/databricks"
+brew "{{ $pfeTap }}/pfe"
+{{- if eq .chezmoi.os "darwin" }}
+cask "dotnet-runtime"
+cask "microsoft-azure-storage-explorer"
+{{- end }}
+{{- end }}

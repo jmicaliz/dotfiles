@@ -1,0 +1,55 @@
+#!/bin/bash
+set -euo pipefail
+
+{{ if .steamos -}}
+if ! sudo -v; then
+    echo "sudo is not usable. Set a password first with 'passwd', then re-run."
+    exit 1
+fi
+if ! command -v curl &>/dev/null; then
+    echo "curl is required to install Homebrew. Install it with: sudo steamos-readonly disable && sudo pacman -S curl"
+    exit 1
+fi
+{{- else if eq .osid "debian" "ubuntu" -}}
+sudo apt update
+sudo apt install -y build-essential procps curl file git zsh
+{{- end }}
+
+if ! command -v brew &>/dev/null && [ ! -x /opt/homebrew/bin/brew ] && [ ! -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+{{ if eq .chezmoi.os "darwin" -}}
+eval "$(/opt/homebrew/bin/brew shellenv)"
+{{- else -}}
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+{{- end }}
+
+{{ if or .steamos (eq .chezmoi.os "darwin") -}}
+command -v zsh &>/dev/null || brew install zsh
+{{- end }}
+
+{{ if .steamos -}}
+# chsh writes to the read-only root and is reverted by OS updates, so hand off from .bashrc instead.
+if ! grep -qs 'dotfiles: hand off to zsh' "$HOME/.bashrc"; then
+    cat >> "$HOME/.bashrc" <<'BASHRC'
+
+# dotfiles: hand off to zsh (SteamOS cannot persist a chsh)
+if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+if [ -z "$ZSH_VERSION" ] && [[ $- == *i* ]] && command -v zsh >/dev/null; then
+    exec zsh
+fi
+BASHRC
+fi
+{{- else -}}
+if [ "$SHELL" != "$(command -v zsh)" ]; then
+    chsh -s "$(command -v zsh)"
+fi
+{{- end }}
+
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+fi
+
+mkdir -p "$HOME/repos"

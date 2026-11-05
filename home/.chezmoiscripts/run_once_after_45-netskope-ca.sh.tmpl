@@ -1,0 +1,8 @@
+{{ if and (eq .machine "work") (eq .chezmoi.os "darwin") -}}
+#!/bin/bash
+set -euo pipefail
+pemfile="$HOME/nscacert_combined.pem"
+[ -f "$pemfile" ] && exit 0
+echo "Creating Netskope CA bundle..."
+security find-certificate -a -p /System/Library/Keychains/SystemRootCertificates.keychain /Library/Keychains/System.keychain > "$pemfile"
+{{ end -}}

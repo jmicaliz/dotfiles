@@ -1,0 +1,41 @@
+#!/bin/bash
+# Python CLIs with no Homebrew formula, each in its own uv-managed venv.
+set -uo pipefail
+{{ if eq .chezmoi.os "darwin" -}}
+eval "$(/opt/homebrew/bin/brew shellenv)"
+{{- else -}}
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+{{- end }}
+
+if ! command -v uv &>/dev/null; then
+    echo "Skipping uv tool installs - uv not found."
+    exit 0
+fi
+
+uv tool install --upgrade graphifyy
+{{- if eq .machine "work" }}
+
+uv tool install --upgrade pltr-cli
+
+pltr="$HOME/.local/bin/pltr"
+[ -x "$pltr" ] || exit 0
+mkdir -p "$HOME/.zfunc"
+"$pltr" completion install --shell zsh >/dev/null
+
+# Seeded only when absent so a token rotated via `pltr configure` survives.
+pltr_profiles="${XDG_CONFIG_HOME:-$HOME/.config}/pltr/profiles.json"
+# profiles.json is pretty-printed, so the array never matches a line-based grep.
+if [ -f "$pltr_profiles" ] && tr -d '[:space:]' < "$pltr_profiles" | grep -q '"profiles":\["'; then
+    exit 0
+fi
+
+echo "Seeding pltr 'default' profile from Keeper..."
+# `pltr verify` concatenates the host into a URL, so it needs the scheme.
+# stdin is closed so an overwrite prompt aborts rather than hanging: configure gates on the keyring.
+PLTR_TOKEN={{ includeTemplate "keeper-field" (list .keeper.foundry "FOUNDRY_PLTR_CLI_TOKEN") | squote }}
+if ! "$pltr" configure configure --profile default --auth-type token \
+    --host "https://{{ includeTemplate "keeper-field" (list .keeper.foundry "FOUNDRY_HOST") | trimPrefix "https://" }}" \
+    --token "$PLTR_TOKEN" >/dev/null 2>&1 < /dev/null; then
+    echo "  Could not seed it - a keyring entry already exists. Run 'pltr configure configure' by hand to replace it."
+fi
+{{- end }}

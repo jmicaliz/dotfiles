@@ -1,0 +1,15 @@
+# Keeper record UIDs for work-machine config. UIDs are references, not secrets.
+keeper:
+  databricks:
+    prd: STfiC0YTGsHaRuCCxJp5VQ
+    prd-sp: yzdMNmnjdGKClfFV0ffxiQ
+    prp: WRqUmVmgok1s1FOX-njhMw
+    prp-sp: sWxVaERkAVdFVkTxwbvOkQ
+    dev: YzfTV_D6lWtW0Tx0e9sUGA
+    tran: oAME1bhObSs3QedEAHrAFg
+  azure: V_oVEfLPlYyNjwmeL8k8_w
+  anthropic: XAaGbiM2OPD5VpERXBNhJA
+  bifrost: w27QinNrYK0eBCMgsCsAkg
+  foundry: FoJDM8NttXWhYVaNsS95UA
+  atlassian: BcW9WStHCE7lLevN79DvTw
+  dotfiles: T3TFsO9Vtqwh881K1hf8FQ

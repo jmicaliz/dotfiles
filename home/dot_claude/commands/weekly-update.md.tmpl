@@ -1,0 +1,145 @@
+{{- $tenant := includeTemplate "keeper-field" (list .keeper.atlassian "ATLASSIAN_HOST") | splitList "." | first -}}
+---
+description: Draft my weekly Slack update, a Confluence status update, and a rough capex timesheet estimate (Requirements/Design vs Coding).
+---
+
+Produce three deliverables for me:
+
+1. A **Slack update post** answering the two standard prompts.
+2. A **Confluence status update** for a high-level, non-technical audience.
+3. A **rough capex timesheet estimate**, split into Requirements/Design vs Coding.
+
+Work through the steps in order. Never post to Slack, and never edit or publish the Confluence page yourself; Playwright is used only to READ that page (Step 4). For both, just produce text for me to paste in myself. And do NOT touch Workday unless I explicitly ask (see Step 7).
+
+## Step 1: Ask me first (before gathering anything)
+
+Ask me to brain-dump, in my own words:
+
+- **This week:** what I worked on / accomplished.
+- **Next week:** what I plan to accomplish.
+
+My answer is the source of truth. **Wait for my response** before continuing. (If I say "just use my log and git," skip ahead and infer everything, but still show me the draft to correct.)
+
+## Step 2: Enrich from evidence (supplement, don't replace, my recap)
+
+**git history: all my repos, last 7 days.** Scan every repo, not just the current one. Loop over `~/repos/*/`, `~/palantir_foundry_repos/*/` (my Foundry repos), and `~/.dotfiles/`, skipping anything that isn't a git checkout:
+
+```sh
+for d in ~/repos/*/ ~/palantir_foundry_repos/*/ ~/.dotfiles/; do
+  [ -d "$d/.git" ] || continue
+  out=$(git -C "$d" log --since="7 days ago" --author="{{ .name }}" --pretty=format:'%h %ad %s' --date=short 2>/dev/null)
+  [ -n "$out" ] && { echo "=== $d ==="; echo "$out"; echo; }
+done
+```
+
+**Filter on the author *name*, not an email.** My commits land under at least three identities: `{{ .email }}`, my personal email (most local commits), and an opaque UUID for Foundry-authored merges. `--author="{{ .name }}"` matches all of them; filtering on any single email silently returns nothing. If a run comes back empty, that's the bug to suspect first: re-run without any `--author` filter and check what identities actually appear.
+
+Treat commits as memory-joggers, not the post itself. Ask if there are repos outside these directories to include.
+
+**Azure DevOps: my work items and PRs (via the `ado-mcp` MCP).** This is a primary source for both the post and the capex split. Pull my activity for the last ~7 days:
+
+- `wit_my_work_items`: work items assigned to me (what I progressed or closed).
+- `repo_list_pull_requests_by_project` (or `repo_list_pull_requests_by_repo`): PRs I created/completed; and `repo_search_commits` for my commits.
+- `work_list_team_iterations`: the current/next iteration, to help frame "next week".
+
+`ado-mcp` needs a fresh sign-in each session: call `auth_status`, and if not authenticated call `auth_login` and hand me the SSO link, then wait for me to sign in. If a tool needs a project or team, reuse the last one I named or ask. Recent context: project **R37 AR Follow Up App**, team **R37 AR Follow Up App Team** (not "Data"); take the current iteration from `work_list_team_iterations`. Work-item *types* also inform the capex split in Step 5: design/spec/planning items lean Requirements/Design; dev tasks and PRs lean Coding.
+
+**Linear: my issues and cycle (via the `linear` MCP).** A second work-item source alongside ADO; pull both, since some work is tracked in only one. For the last ~7 days:
+
+- `list_issues`: issues assigned to me (assignee `me`, `updatedAt: -P7D`). "Updated" includes edits and grooming, so use `completedAt`/`startedAt` to tell real progress from planning; grooming a batch of unstarted issues counts as Requirements/Design, not shipped work.
+- `list_comments`: my comments on those issues, for decisions and context not visible from state changes.
+- `list_cycles`: the current/next cycle, to help frame "next week". It needs a `teamId`; take it from the issue results.
+
+If an issue mirrors an ADO item, merge them into one entry rather than double-counting. Issue labels and titles inform the capex split the same way ADO work-item types do.
+
+**Slack: my recent activity (via the Slack MCP).** My Slack user id is `{{ includeTemplate "keeper-field" (list .keeper.dotfiles "SLACK_USER_ID") }}`. Pull my last 7 days with `slack_search_public_and_private` using `from:<@{{ includeTemplate "keeper-field" (list .keeper.dotfiles "SLACK_USER_ID") }}> after:<YYYY-MM-DD>` (sort by timestamp), plus a few topical searches for anything I mention. This surfaces threads, decisions, and who I collaborated with. My prior weekly update lands in **{{ includeTemplate "keeper-field" (list .keeper.dotfiles "STATUS_SLACK") }}** (manager: {{ includeTemplate "keeper-field" (list .keeper.dotfiles "MANAGER_NAME") }}) in this same two-prompt format, which is good for voice and continuity. Use `include_context:false` and small `limit`s; topical searches can overflow, so narrow with filters.
+
+**GitHub: my PRs, reviews, releases (via the GitHub MCP).** Use for PRs I authored or reviewed and release notes when the git log alone is thin. Check `auth_status` / `auth_login` first.
+
+**PagerDuty: alert/incident context (via the PagerDuty MCP).** Use when the week touched alerting or on-call work (e.g. event-volume, incident response).
+
+**Palantir Foundry: build & pipeline evidence (via the `palantir-mcp` MCP).** For Foundry work (ingest, datasets, releases), confirm what actually ran: `search_foundry_projects` to find datasets/repos by name, then `search_dataset_builds` (filter by `datasetRids` + `minStartTime`) to verify ingest/builds succeeded and land concrete outcomes ("prod tables built cleanly"). These results can overflow; parse the saved file with a script rather than reading it whole.
+
+## Step 3: Draft the Slack post
+
+Concise and skimmable (audience is peers + my manager). **Plain text only: no bold, italics, headers, or any markdown/emphasis in the post itself.** It has to paste cleanly into Slack, and `**`/`*` show up as literal characters. **Never use em dashes in the post**; use commas, periods, parentheses, or a colon instead. Write the two prompts as plain lines and use simple `-` bullets. Use this exact structure:
+
+What should your peers and I know about this week?
+
+- <a few crisp bullets: outcomes and impact, not an activity log>
+
+What do you want to accomplish next week?
+
+- `<a few bullets: concrete goals>`
+
+Write in my voice, first person, no fluff. Prefer outcomes ("shipped X, which unblocks Y") over raw task lists.
+
+## Step 4: Draft the Confluence status update
+
+This update goes on a shared Confluence page that is organized **by project/workstream, not by person**, and **there is a new page each month**, so the target page changes as the month rolls over. Never assume a hardcoded page id; find the current month's page first. All the monthly pages live in this folder in the **AAR37** space:
+
+```text
+https://{{ includeTemplate "keeper-field" (list .keeper.atlassian "ATLASSIAN_HOST") }}/wiki/spaces/AAR37/folder/3405480098
+```
+
+Use the `playwright-cli` skill to **READ** the folder and page, never to edit or publish:
+
+- Open the folder in **Edge** with a persistent profile, which reuses my existing SSO session instead of hitting a fresh Microsoft/Atlassian login:
+
+  ```sh
+  playwright-cli open --browser=msedge --persistent https://{{ includeTemplate "keeper-field" (list .keeper.atlassian "ATLASSIAN_HOST") }}/wiki/spaces/AAR37/folder/3405480098
+  ```
+
+- **If Atlassian still shows a login page,** do NOT click the "Microsoft" button under "Or continue with"; my account is org-managed, so that path dead-ends with `errorCode=social_login_managed_user`. Instead type `{{ .email }}` into the Email field and click **Continue**; that redirects through org SSO and lands on the page with no password prompt. (Workday's persistent-profile SSO does work directly, so this quirk is Atlassian-only.)
+- The Workday/Confluence session can also drop mid-run and bounce to a login URL. If a click fails with a stale-ref error and the page URL has become a login page, just re-`goto` the target URL; SSO re-establishes silently.
+- Snapshot the folder and list the child pages. Pick the one for the **current month** (based on today's date); the page titles are month-based, so match on month and year. Then open that page by its own link, using the rendered view URL (drop `/edit-v2/` from any editor link) so nothing risks being edited.
+- Early in a new month the current month's page may not exist yet, and near the end of a month the next month's page may already be there. If there's no page for this month, or more than one plausible match, **show me the list of pages in the folder and ask which one to use**; don't guess, and don't create a page.
+- Snapshot the page and read it. Note how it's organized: the project/workstream section headings, the format and wording of each section, and how prior weeks are phrased and dated.
+
+Then draft my contribution so it slots cleanly into the right project/workstream section(s). The audience is **high-level and non-technical** (leadership and stakeholders), a different audience from the Slack post, so rewrite; don't reuse the Slack bullets:
+
+- **Match the page's existing structure and style.** Put my work under the project/workstream heading(s) it belongs to; mirror the wording, formatting, and dating pattern the page already uses rather than imposing my own. If my work doesn't obviously map to an existing section, ask me which workstream it belongs under.
+- **Plain, non-technical language.** No tool names, ticket numbers, repo names, or engineering jargon (say "the follow-up app," not "the ADO board" or "the ingest pipeline"). Frame everything as business outcomes and progress: what got better, what's unblocked, and what it means for the team or the product.
+- For each relevant workstream, cover **what was done this week** and **what's planned for next week**, keeping it skimmable.
+
+Draw on the same evidence gathered in Step 2, but translate it up a level: group related work into themes, drop the implementation detail, and lead with why it matters.
+
+## Step 5: Rough capex estimate
+
+Estimate capitalizable hours for the week, split into two buckets:
+
+- **Requirements/Design**: writing docs, product/design meetings, planning, specs. (Most *manager* capex time lands here.)
+- **Coding**: all development activities: writing/reviewing code, debugging, building. (Most *IC* capex time lands here.)
+
+Base the split on the week's evidence (my recap + commits + work items). Present it as a table:
+
+| Category | Est. hours | Basis |
+| --- | --- | --- |
+| Requirements/Design | ? | … |
+| Coding | ? | … |
+| **Total capex** | ? | |
+
+Then **ask me to confirm or adjust** the total and the split. This is a rough estimate for me to enter in Workday, not an exact time record.
+
+## Step 6: Deliver
+
+Show all three together: the Slack post, the Confluence update, and the capex table. Present the Slack post as plain text inside a fenced code block so it copies out cleanly with no markdown rendering (no `**`, no `>` blockquote). Present the Confluence update in its own fenced code block too, so I can copy it straight into the page. The capex table can stay as a normal markdown table. Offer to adjust tone/length or reallocate hours.
+
+## Step 7: Fill in Workday (only if I explicitly ask)
+
+Skip this step by default. Only do this if I separately ask you to actually enter the capex hours in Workday. Use the `playwright-cli` skill/tool for this:
+
+- Open the Enter Time task in **Edge** with a persistent profile; this reuses my existing SSO session, so it lands directly on the page instead of hitting a fresh Microsoft login (which happens if you open in Chrome):
+
+  ```sh
+  playwright-cli open --browser=msedge --persistent https://www.myworkday.com/{{ $tenant }}/d/task/2997%244767.htmld
+  ```
+
+- Look at the prior week's entries in the calendar/timeline to learn the exact pattern: two line items per work day, one per time type, e.g. `800010 IDS - Autonomous Follow-up > Project Tasks > 0003 - (IDS) Requirements` and `> 0005 - (IDS) Coding`. Match that pattern (project + task names) exactly rather than guessing.
+- The weekly Requirements/Coding total from Step 5 usually won't divide evenly across 5 days in the same flat daily pattern as a prior week (e.g. 2 Requirements + 5 Coding = 7 hrs/day). **Ask me how to split the aggregate across the days before entering anything**; don't guess a distribution.
+- For each day, click the calendar cell to open the "Enter Time" dialog (if the cell already has an entry, click the date-number text inside the cell instead; the cell itself gets blocked by the existing entry chip). In the Time Type field:
+  - Do **not** rely on free-text search; searching e.g. "Coding" can match a similarly-named but wrong project (I have both an "IDS - Autonomous Follow-up" and an unrelated "IDS - Autonomous Coding" project). Instead, click the field, open **Most Recently Used**, and pick the exact two items from there; they're normally already in that list from prior weeks.
+  - Fill Hours, click OK. Repeat for the second time type on the same day.
+- After entering a day, re-snapshot before continuing; refs from a prior snapshot go stale once the dialog closes and the calendar re-renders.
+- Verify at the end: each day's calendar cell should show the right "Hours: N" total, and the month's "Project Hours" summary should equal the prior total plus this week's total.
+- Leave every entry as **Not Submitted**. Never click Submit / send the timesheet for approval; that's my call, not yours.

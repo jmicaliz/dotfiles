@@ -1,0 +1,42 @@
+#!/bin/bash
+set -uo pipefail
+{{ if eq .chezmoi.os "darwin" -}}
+eval "$(/opt/homebrew/bin/brew shellenv)"
+{{- else -}}
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+{{- end }}
+
+brew update
+
+{{ if not .steamos -}}
+# Homebrew 6+ refuses untrusted taps and aborts the whole bundle; `brew trust` doesn't exist before 6.
+if brew trust --help &>/dev/null; then
+    brew trust --tap hashicorp/tap
+{{- if eq .machine "work" }}
+    brew trust --tap databricks/tap
+    brew trust --tap {{ includeTemplate "keeper-field" (list .keeper.dotfiles "PFE_TAP") }}
+{{- end }}
+fi
+{{- end }}
+
+{{ if .steamos -}}
+# SteamOS has no system compiler and Homebrew's gcc only ships versioned binaries; Homebrew searches its own bin before /usr/bin.
+brew install gcc || true
+BREW_BIN="$(brew --prefix)/bin"
+GCC_VERSIONED="$(ls "$BREW_BIN"/gcc-[0-9]* 2>/dev/null | sort -V | tail -1)"
+CXX_VERSIONED="$(ls "$BREW_BIN"/g++-[0-9]* 2>/dev/null | sort -V | tail -1)"
+if [ -n "$GCC_VERSIONED" ] && [ ! -e "$BREW_BIN/cc" ]; then
+    ln -sf "$GCC_VERSIONED" "$BREW_BIN/cc"
+    ln -sf "$GCC_VERSIONED" "$BREW_BIN/gcc"
+    [ -n "$CXX_VERSIONED" ] && ln -sf "$CXX_VERSIONED" "$BREW_BIN/c++"
+    [ -n "$CXX_VERSIONED" ] && ln -sf "$CXX_VERSIONED" "$BREW_BIN/g++"
+    brew postinstall gcc || true
+fi
+{{- end }}
+
+# A stale .incomplete download makes an otherwise successful pour report failure.
+rm -f "$(brew --cache)"/downloads/*.incomplete 2>/dev/null
+
+brew bundle --file=- <<'BREWFILE' || echo "WARNING: 'brew bundle' failed, some Brewfile tools are missing."
+{{ template "Brewfile" . }}
+BREWFILE

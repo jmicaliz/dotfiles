@@ -1,0 +1,13 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+# Homebrew closes stdin on the `sudo` it runs for pkg-based cask upgrades, so its prompt is unanswerable.
+# ~/.sudo_askpass reads the password from this login keychain entry instead.
+set -uo pipefail
+security find-generic-password -a "$USER" -s dotfiles-sudo -w >/dev/null 2>&1 && exit 0
+if [ -t 0 ]; then
+    echo "Storing your sudo password in the login keychain (service: dotfiles-sudo)..."
+    security add-generic-password -U -a "$USER" -s dotfiles-sudo -T /usr/bin/security -w
+else
+    echo "No dotfiles-sudo keychain entry - run 'chezmoi apply' from a terminal once to create it."
+fi
+{{ end -}}

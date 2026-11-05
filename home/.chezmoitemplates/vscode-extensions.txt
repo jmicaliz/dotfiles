@@ -1,0 +1,23 @@
+anthropic.claude-code
+davidanson.vscode-markdownlint
+docker.docker
+github.vscode-github-actions
+github.vscode-pull-request-github
+hashicorp.terraform
+mechatroner.rainbow-csv
+ms-azuretools.vscode-containers
+ms-python.python
+ms-toolsai.jupyter
+ms-vscode.hexeditor
+naumovs.color-highlight
+njpwerner.autodocstring
+{{ if eq .machine "work" -}}
+palantir.authoring-vscode-extension
+{{ end -}}
+redhat.vscode-yaml
+rogalmic.bash-debug
+samuelcolvin.jinjahtml
+shd101wyy.markdown-preview-enhanced
+streetsidesoftware.code-spell-checker
+tamasfe.even-better-toml
+tumido.cron-explained

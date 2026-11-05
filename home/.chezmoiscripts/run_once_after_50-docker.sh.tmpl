@@ -1,0 +1,8 @@
+{{ if and (eq .machine "personal") (eq .osid "debian" "ubuntu") (not .steamos) -}}
+#!/bin/bash
+# macOS gets Docker Engine from the docker-desktop cask; Debian/Ubuntu get it from apt.
+set -uo pipefail
+command -v dockerd &>/dev/null || sudo apt install -y docker.io
+id -nG "$USER" | grep -qw docker || sudo usermod -aG docker "$USER"
+sudo systemctl enable --now docker >/dev/null 2>&1 || echo "Could not enable docker.service."
+{{ end -}}

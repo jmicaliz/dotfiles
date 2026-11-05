@@ -1,0 +1,5 @@
+alias pl='pltr'
+alias pls='pltr shell'
+alias plsql='pltr sql execute'
+alias plds='pltr dataset'
+alias plv='pltr verify'

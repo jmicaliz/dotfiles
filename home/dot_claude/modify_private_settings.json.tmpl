@@ -1,0 +1,25 @@
+#!/bin/bash
+# Merge rather than overwrite so keys added by Claude Code or other installers survive.
+# Repo values win on scalars; arrays are unioned, so removing an entry here won't remove it live.
+# hooks is replaced wholesale: unioning its matcher objects would duplicate a hook group whenever one changes.
+set -euo pipefail
+for brew in /opt/homebrew/bin/brew /home/linuxbrew/.linuxbrew/bin/brew; do
+    [ -x "$brew" ] && eval "$("$brew" shellenv)" && break
+done
+live="$(cat)"
+jq -n --argjson live "${live:-"{}"}" --argjson base "$(cat <<'CHEZMOI_EOF'
+{{ includeTemplate "claude-settings-base.json" . }}
+CHEZMOI_EOF
+)" --argjson overlay "$(cat <<'CHEZMOI_EOF'
+{{ includeTemplate "claude-settings.json" . }}
+CHEZMOI_EOF
+)" '
+    def merge($a; $b):
+      if ($a|type) == "object" and ($b|type) == "object" then
+        reduce (($a|keys_unsorted) + (($b|keys_unsorted) - ($a|keys_unsorted)))[] as $k ({};
+          .[$k] = if ($a|has($k)) and ($b|has($k)) then merge($a[$k]; $b[$k])
+                  elif ($b|has($k)) then $b[$k] else $a[$k] end)
+      elif ($a|type) == "array" and ($b|type) == "array" then $a + ($b - $a)
+      else $b end;
+    merge($base; $overlay) as $repo
+    | merge($live; $repo) | if $repo | has("hooks") then .hooks = $repo.hooks else . end'

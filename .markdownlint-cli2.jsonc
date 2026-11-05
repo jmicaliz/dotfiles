@@ -1,0 +1,8 @@
+{
+  "config": {
+    "MD013": false,
+    "MD041": false
+  },
+  "frontMatter": "^(?:\\{\\{.*\\}\\}\\r?\\n)*---\\r?\\n[\\s\\S]*?\\r?\\n---(?:\\r?\\n|$)",
+  "ignores": ["**/node_modules/**"]
+}

@@ -1,0 +1,10 @@
+{{ if eq .machine "work" -}}
+#!/bin/bash
+src="{{ .chezmoi.sourceDir }}/dot_claude"
+for f in{{ range .claudeShared }} {{ . | quote }}{{ end }}; do
+    live="$HOME/.claude/$f"
+    [ -e "$live" ] || continue
+    diff -rq "$live" "$src/$f" >/dev/null 2>&1 && continue
+    echo "~/.claude/$f differs from dotfiles. Run 'make sync-work' to update personal machines."
+done
+{{ end -}}

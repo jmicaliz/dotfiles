@@ -1,0 +1,10 @@
+{{ if ne .chezmoi.os "darwin" -}}
+#!/bin/bash
+set -euo pipefail
+fc-list 2>/dev/null | grep -q "MesloLGS Nerd Font" && exit 0
+font_dir="$HOME/.local/share/fonts/MesloLGSNerdFont"
+mkdir -p "$font_dir"
+curl -fsSL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.tar.xz \
+    | tar -xJf - -C "$font_dir" --wildcards 'MesloLGSNerdFont*'
+command -v fc-cache &>/dev/null && fc-cache -f "$font_dir"
+{{ end -}}

@@ -1,0 +1,39 @@
+{{- if ne .chezmoi.os "darwin" }}
+Library
+{{- end }}
+{{- if not .steamos }}
+.var
+{{- end }}
+{{- if or (eq .chezmoi.os "darwin") .steamos }}
+.config/Code
+{{- end }}
+{{- if ne .machine "work" }}
+.databrickscfg
+.azure
+{{- end }}
+{{- if ne .machine "work" }}
+.claude/hooks/ado-branch-context.py
+.claude/hooks/databricks-profile-guard.py
+.claude/hooks/git-commit-guard.py
+.claude/hooks/python-quality.py
+.claude/commands/pr-review.md
+.claude/commands/review-digest.md
+.claude/commands/weekly-update.md
+{{- end }}
+{{- if eq .machine "work" }}
+.claude/commands/create-pr.md
+.claude/commands/push.md
+.claude/commands/quick-self-review.md
+{{- range .claudeShared }}
+.claude/{{ . }}
+{{- end }}
+{{- end }}
+{{- if ne .machine "work" }}
+.oh-my-zsh/custom/plugins/pltr
+{{- end }}
+{{- if ne .chezmoi.os "darwin" }}
+.sudo_askpass
+{{- end }}
+{{- if ne .machine "work" }}
+.config/dotfiles-guard
+{{- end }}

@@ -1,0 +1,19 @@
+; The profile defined in the DEFAULT section is to be used as a fallback when no profile is explicitly specified.
+[DEFAULT]
+{{- range $name := list "prd" "prd-sp" "prp" "prp-sp" "dev" "tran" }}
+{{-   $uid := index $.keeper.databricks $name }}
+
+[{{ $name }}]
+host         = {{ includeTemplate "keeper-field" (list $uid "HOST") }}
+{{-   if hasSuffix "-sp" $name }}
+client_id    = {{ includeTemplate "keeper-field" (list $uid "CLIENT_ID") }}
+{{-   else }}
+account_id   = {{ includeTemplate "keeper-field" (list $uid "ACCOUNT_ID") }}
+workspace_id = {{ includeTemplate "keeper-field" (list $uid "WORKSPACE_ID") }}
+{{-   end }}
+auth_type    = {{ includeTemplate "keeper-field" (list $uid "AUTH_TYPE") }}
+{{- end }}
+
+[__settings__]
+auth_storage    = secure
+default_profile = prp

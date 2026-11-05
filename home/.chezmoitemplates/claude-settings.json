@@ -1,0 +1,11 @@
+{{- if eq .machine "work" -}}
+{{-   $overlay := includeTemplate "claude-settings-work.json" . | fromJson -}}
+{{-   $env := dict
+        "ANTHROPIC_BASE_URL" (includeTemplate "keeper-field" (list .keeper.anthropic "ANTHROPIC_BASE_URL"))
+        "ANTHROPIC_AUTH_TOKEN" (includeTemplate "keeper-field" (list .keeper.bifrost "BIFROST_VIRTUAL_KEY"))
+        "CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY" "1" -}}
+{{-   $_ := set $overlay "env" $env -}}
+{{-   $overlay | toPrettyJson -}}
+{{- else -}}
+{}
+{{- end -}}

@@ -1,0 +1,18 @@
+{{- $uid := .keeper.azure -}}
+[cloud]
+name = AzureCloud
+
+[core]
+output = json
+collect_telemetry = false
+first_run = yes
+
+[defaults]
+group = {{ includeTemplate "keeper-field" (list $uid "DEFAULTS_GROUP") }}
+location = {{ includeTemplate "keeper-field" (list $uid "DEFAULTS_LOCATION") }}
+
+[storage]
+account = {{ includeTemplate "keeper-field" (list $uid "STORAGE_ACCOUNT") }}
+
+[logging]
+enable_log_file = true

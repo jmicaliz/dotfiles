@@ -1,0 +1,75 @@
+{
+  "enabledPlugins": {
+    "slack@claude-plugins-official": true,
+    "databricks@claude-plugins-official": true
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/hooks/databricks-profile-guard.py\"",
+            "statusMessage": "Checking Databricks profile",
+            "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/hooks/git-commit-guard.py\"",
+            "statusMessage": "Checking branch",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/hooks/python-quality.py\"",
+            "statusMessage": "Formatting and linting Python",
+            "timeout": 150
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/hooks/markdown-nowrap.py\"",
+            "statusMessage": "Checking markdown wrapping",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/hooks/ado-branch-context.py\"",
+            "statusMessage": "Resolving ADO ticket from branch",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:{{ includeTemplate "keeper-field" (list .keeper.foundry "FOUNDRY_HOST") }})",
+      "mcp__palantir-mcp__get_build_status",
+      "mcp__palantir-mcp__get_dataset_stats",
+      "mcp__palantir-mcp__get_foundry_ontology_rid",
+      "mcp__palantir-mcp__get_project_imports",
+      "mcp__palantir-mcp__get_resource_graph",
+      "mcp__palantir-mcp__list_code_repository_pull_requests",
+      "mcp__palantir-mcp__search_dataset_builds",
+      "mcp__palantir-mcp__search_foundry_documentation",
+      "mcp__palantir-mcp__search_foundry_ontology",
+      "mcp__palantir-mcp__search_foundry_projects",
+      "mcp__palantir-mcp__view_foundry_object_type"
+    ]
+  }
+}

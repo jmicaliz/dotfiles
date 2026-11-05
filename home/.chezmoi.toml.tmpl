@@ -1,0 +1,23 @@
+{{- $machine := promptChoiceOnce . "machine" "Machine type" (list "personal" "work") -}}
+{{- $name := promptStringOnce . "name" "Full name" -}}
+{{- $email := promptStringOnce . "email" (ternary "Work email" "Email" (eq $machine "work")) -}}
+{{- $osid := .chezmoi.os -}}
+{{- if and (eq .chezmoi.os "linux") (hasKey .chezmoi.osRelease "id") -}}
+{{-   $osid = .chezmoi.osRelease.id -}}
+{{- end -}}
+
+sourceDir = {{ .chezmoi.workingTree | quote }}
+
+[data]
+machine = {{ $machine | quote }}
+name = {{ $name | quote }}
+email = {{ $email | quote }}
+osid = {{ $osid | quote }}
+steamos = {{ eq $osid "steamos" }}
+secretsBackend = {{ if eq $machine "work" }}"keeper"{{ else }}"bitwarden"{{ end }}
+
+[bitwarden]
+unlock = "auto"
+
+[diff]
+exclude = ["scripts"]

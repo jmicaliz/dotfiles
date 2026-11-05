@@ -1,0 +1,23 @@
+{{- if eq .machine "work" -}}
+# Rendered from Keeper by chezmoi. Literal values dotfiles-guard blocks from commits.
+{{- range $_, $uid := .keeper }}
+{{-   $uids := list }}
+{{-   if kindIs "map" $uid }}{{ range $_, $u := $uid }}{{ $uids = append $uids $u }}{{ end }}{{ else }}{{ $uids = list $uid }}{{ end }}
+{{-   range $uids }}
+{{-     range (keeper .).custom }}
+{{-       range .value }}
+{{-         if and (kindIs "string" .) (ge (len .) 6) }}
+{{ . }}
+{{-           if hasPrefix "https://" . }}
+{{ trimPrefix "https://" . | trimSuffix "/" }}
+{{-           end }}
+{{-         end }}
+{{-       end }}
+{{-     end }}
+{{-   end }}
+{{- end }}
+{{- range (index .secrets .machine) }}
+{{ includeTemplate "keeper-field" (list .item .field) }}
+{{- end }}
+{{ .email }}
+{{- end }}

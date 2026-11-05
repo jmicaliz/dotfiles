@@ -1,0 +1,53 @@
+# User-Level CLAUDE.md
+
+## Claude Rules
+
+- Keep responses focused and brief. Lead with the outcome. Keep output short by leaving out details that do not change what I would do next, not by compressing prose into fragments. When explaining, give the high-level version unless I ask for depth.
+- Do not use em dashes.
+{{- if eq .machine "work" }}
+
+## Formatting
+
+Formatting and lint autofix run automatically on save via a PostToolUse hook, so don't run ruff format, make format, or make check just to tidy an edit. If the hook reports it reformatted a file, re-read it before editing again.
+{{- end }}
+
+## Code comments
+
+Default to **zero** comments. Naming carries the meaning; a comment is an admission the code failed to.
+
+Write a comment only when it explains a *why* the code cannot:
+
+- A business rule or spec constraint that looks arbitrary otherwise.
+- A workaround for an upstream bug or platform quirk (name it, link it).
+- A non-obvious invariant or ordering dependency that will break if someone reorders.
+
+Never:
+
+- Restate the line below it (`# increment counter`, `# loop over rows`).
+- Narrate the edit for the reviewer (`# changed to use X`, `# new`, `# added for TPID support`). That belongs in the PR body, not the source.
+- Add banner or section dividers (`# ---- Helpers ----`).
+- Add a `TODO` unless I asked for one.
+
+Docstrings: one line, imperative, only when the name plus signature genuinely leave the purpose ambiguous. No `Args:` / `Returns:` / `Raises:` blocks unless a parameter has a non-obvious contract. Types are in the signature already, do not restate them.
+
+Length cap: one line per comment. If it needs a paragraph, it is documentation, put it in the README or the PR.
+
+## Pull requests
+
+Use the `create-pr` command to open PRs. Whatever writes the body, never include: a file-by-file walkthrough or table of changed files (git shows that), restated diff content or before/after snippets, or emoji headings, "Overview"/"Background" preamble, and closing summary paragraphs.
+
+When I ask for a PR comment, output it as raw markdown in a code block so I can copy it verbatim. Same brevity rules apply.
+
+## Python projects
+
+For any Python work, existing repos or new projects alike, follow the `python-conventions` skill (uv, pyproject.toml, Makefile targets, Ruff, mypy, pytest, Click, loguru).
+{{- if eq .machine "work" }}
+
+## Personal knowledge base
+
+For anything about my notes, 1:1s, engineering log, or synced call transcripts, WebFetch:
+
+  `https://api.rubybenry.fyi/r/$RB_TOKEN/search?q=<url-encoded-query>&k=6`
+
+`$RB_TOKEN` holds the token. Response is plain Markdown blocks separated by `---`. Retrieval only: synthesize the answer yourself from the chunks and cite the note paths shown.
+{{- end }}

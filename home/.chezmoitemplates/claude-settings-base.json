@@ -1,0 +1,99 @@
+{
+  "model": "claude-opus-5-5",
+  "promptCacheTtl": "1h",
+  "effortLevel": "medium",
+  "enabledPlugins": {
+    "skill-creator@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "claude-code-setup@claude-plugins-official": true
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/hooks/dotfiles-guard.py\"",
+            "statusMessage": "Checking dotfiles for identifying text",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(gh auth:*)",
+      "Bash(gh pr:*)",
+      "Bash(git add:*)",
+      "Bash(git branch:*)",
+      "Bash(git commit:*)",
+      "Bash(git diff:*)",
+      "Bash(git fetch:*)",
+      "Bash(git log:*)",
+      "Bash(git push:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset:*)",
+      "Bash(git status:*)",
+      "Bash(grep:*)",
+      "Bash(head:*)",
+      "Bash(ls:*)",
+      "Bash(make check *)",
+      "Bash(playwright-cli --raw eval \"document.querySelector\\('#content-body, .ak-renderer-document, [data-testid=\\\\\"page-content\\\\\"]'\\)?.innerText || document.querySelector\\('main'\\)?.innerText || ''\" > /tmp/conf-body.txt 2>&1; wc -c /tmp/conf-body.txt; head -c 200 /tmp/conf-body.txt)",
+      "Bash(playwright-cli --raw snapshot > /tmp/conf-page.yml 2>&1; wc -l /tmp/conf-page.yml; playwright-cli eval \"document.title\" 2>&1 | head -8)",
+      "Bash(playwright-cli -s=m365 *)",
+      "Bash(pwd:*)",
+      "Bash(tail:*)",
+      "Bash(uv run:*)",
+      "Bash(xargs ls -la)",
+      "Read(//private/tmp/**)",
+      "Read(//tmp/**)",
+      "Skill(playwright-cli:*)",
+      "Skill(update-config:*)",
+      "WebSearch",
+      "mcp__ado-mcp__auth_login",
+      "mcp__ado-mcp__auth_status",
+      "mcp__ado-mcp__core_list_projects",
+      "mcp__ado-mcp__repo_list_pull_requests_by_project",
+      "mcp__ado-mcp__search_wiki",
+      "mcp__ado-mcp__search_workitem",
+      "mcp__ado-mcp__wit_get_work_item",
+      "mcp__ado-mcp__wit_get_work_items_batch_by_ids",
+      "mcp__ado-mcp__wit_list_work_item_comments",
+      "mcp__ado-mcp__wit_my_work_items",
+      "mcp__ado-mcp__wit_update_work_item",
+      "mcp__ado-mcp__work_list_team_iterations",
+      "mcp__claude_ai_Atlassian__atlassianUserInfo",
+      "mcp__claude_ai_Atlassian__createJiraIssue",
+      "mcp__claude_ai_Atlassian__editJiraIssue",
+      "mcp__claude_ai_Atlassian__getAccessibleAtlassianResources",
+      "mcp__claude_ai_Atlassian__getJiraIssue",
+      "mcp__claude_ai_Atlassian__getJiraIssueTypeMetaWithFields",
+      "mcp__claude_ai_Atlassian__getJiraProjectIssueTypesMetadata",
+      "mcp__claude_ai_Atlassian__getTransitionsForJiraIssue",
+      "mcp__claude_ai_Atlassian__searchConfluenceUsingCql",
+      "mcp__claude_ai_Atlassian__searchJiraIssuesUsingJql",
+      "mcp__claude_ai_Atlassian__transitionJiraIssue",
+      "mcp__github__auth_login",
+      "mcp__github__auth_status",
+      "mcp__github__get_file_contents",
+      "mcp__github__search_code",
+      "mcp__kb__get_note",
+      "mcp__kb__search_knowledge",
+      "mcp__plugin_slack_slack__slack_read_file",
+      "mcp__plugin_slack_slack__slack_read_thread",
+      "mcp__plugin_slack_slack__slack_search_public_and_private"
+    ],
+    "deny": [
+      "Bash(rm -rf /:*)",
+      "Bash(terraform apply:*)",
+      "Bash(terraform destroy:*)"
+    ],
+    "additionalDirectories": [
+      "/tmp"
+    ]
+  }
+}

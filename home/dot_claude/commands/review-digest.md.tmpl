@@ -1,0 +1,58 @@
+---
+description: DM me a digest of my PRs posted in {{ includeTemplate "keeper-field" (list .keeper.dotfiles "PFE_SLACK") }} that are still open and unapproved.
+---
+
+Build a short digest of my PRs that still need review and DM it to me in Slack. Lookback window is `$ARGUMENTS` (e.g. `7d`, `30d`), default 14 days.
+
+## Step 1: Collect my PR posts
+
+Read `{{ includeTemplate "keeper-field" (list .keeper.dotfiles "PFE_SLACK") }}` (`{{ includeTemplate "keeper-field" (list .keeper.dotfiles "PFE_SLACK_ID") }}`) with `slack_read_channel`, using `oldest` set to the start of the window and paginating until exhausted. My Slack user id is `{{ includeTemplate "keeper-field" (list .keeper.dotfiles "SLACK_USER_ID") }}`; my GitHub login is `{{ includeTemplate "keeper-field" (list .keeper.dotfiles "WORK_GITHUB_LOGIN") }}`. Keep a message if either:
+
+- It's from the **pfe PR Ready for Review** bot and contains `by {{ includeTemplate "keeper-field" (list .keeper.dotfiles "WORK_GITHUB_LOGIN") }}`.
+- It's from me and starts with `[Review Required]` (case-insensitive).
+
+Pull every PR link out of each kept message (`github.com/<owner>/<repo>/pull/<n>`, plus Foundry `palantirfoundry.com/.../pulls/...` links). Dedupe by URL, keeping the Slack message permalink and ts for each.
+
+## Step 2: Check status
+
+For each GitHub PR, run:
+
+```sh
+gh pr view <url> --json number,title,state,isDraft,reviewDecision,reviews,comments,createdAt,url
+```
+
+Drop it if `state` is not `OPEN`, or if `reviewDecision` is `APPROVED`. Classify what's left:
+
+- **Not looked at**: no reviews and no comments from anyone but me.
+- **Changes requested**: `reviewDecision` is `CHANGES_REQUESTED`.
+- **Reviewed, not approved**: anything else (comments or COMMENTED reviews only).
+
+Ignore Slack reactions and thread replies for status; GitHub is the source of truth. Foundry PRs can't be checked this way, so list them under a separate "Check manually" line rather than guessing.
+
+If nothing is left, tell me so and don't send anything.
+
+## Step 3: Draft the digest
+
+A condensed version of the bot's `[Review Required]` post: one line per PR, no descriptions or priority. Slack mrkdwn, no em dashes. Group by status, oldest first within each group, and omit empty groups:
+
+```text
+*[Review Required] digest*: N of my PRs still need eyes
+
+*Not looked at*
+• <pr-url|repo#44 ENGN-193: Add /collapse-dependabot command>
+
+*Reviewed, not approved*
+• <pr-url|repo#42 ENGN-67: Tag every merge and deploy it via a reusable workflow>
+
+*Changes requested*
+• ...
+
+*Check manually (Foundry)*
+• <pr-url|Title>
+```
+
+Use the short repo name (e.g. `{{ includeTemplate "keeper-field" (list .keeper.dotfiles "PFE_NAME") }}`). Don't show how long a PR has been open.
+
+## Step 4: Send it to me
+
+Send the digest as a DM to myself with `slack_send_message`, `channel_id` `{{ includeTemplate "keeper-field" (list .keeper.dotfiles "SLACK_USER_ID") }}`. Never post it to the team channel or anyone else; I'll review it and forward it myself. Then show me the sent text and a one-line count per group.

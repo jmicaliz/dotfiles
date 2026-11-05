@@ -1,0 +1,13 @@
+{{- /* keeperDataFields keys by field type, so custom fields are looked up by label. Expects (list uid label). */ -}}
+{{- $uid := index . 0 -}}
+{{- $label := index . 1 -}}
+{{- $found := false -}}
+{{- range (keeper $uid).custom -}}
+{{-   if and (not $found) (eq .label $label) -}}
+{{-     index .value 0 -}}
+{{-     $found = true -}}
+{{-   end -}}
+{{- end -}}
+{{- if not $found -}}
+{{-   fail (printf "Keeper record %s has no field %q" $uid $label) -}}
+{{- end -}}

@@ -1,0 +1,22 @@
+{{ if and (eq .machine "work") (not .steamos) -}}
+#!/bin/bash
+# Podman serves the Docker API for the docker CLI, act, and the VS Code Docker extension.
+set -uo pipefail
+{{ if eq .chezmoi.os "darwin" -}}
+eval "$(/opt/homebrew/bin/brew shellenv)"
+command -v podman &>/dev/null || exit 0
+if [ -z "$(podman machine list --format '{{"{{"}}.Name{{"}}"}}' 2>/dev/null)" ]; then
+    echo "Creating podman machine..."
+    podman machine init --cpus 4 --memory 8192
+fi
+# Links /var/run/docker.sock to the machine's socket so docker-expecting tools need no DOCKER_HOST.
+if [ ! -f "/Library/LaunchDaemons/com.github.containers.podman.helper-$USER.plist" ]; then
+    echo "Installing podman-mac-helper..."
+    [ -x "$HOME/.sudo_askpass" ] && export SUDO_ASKPASS="$HOME/.sudo_askpass"
+    sudo -A "$(brew --prefix podman)/bin/podman-mac-helper" install || echo "Could not install podman-mac-helper."
+fi
+{{- else if eq .osid "debian" "ubuntu" -}}
+command -v podman &>/dev/null || sudo apt install -y podman uidmap
+systemctl --user enable --now podman.socket >/dev/null 2>&1 || echo "Could not enable podman.socket (no systemd user session?)."
+{{- end }}
+{{ end -}}
