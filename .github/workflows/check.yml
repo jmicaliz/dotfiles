@@ -1,0 +1,21 @@
+name: Check
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Load Keeper denylist
+        env:
+          DENYLIST: ${{ secrets.DOTFILES_GUARD_DENYLIST }}
+        run: |
+          [ -n "$DENYLIST" ] || exit 0
+          mkdir -p "$HOME/.config/dotfiles-guard"
+          printf '%s\n' "$DENYLIST" > "$HOME/.config/dotfiles-guard/denylist"
+      - run: npm install -g markdownlint-cli2@0.24.0
+      - run: make check
