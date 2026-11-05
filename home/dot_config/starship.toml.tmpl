@@ -137,7 +137,8 @@ format = """\
 style = 'fg:white bg:#474646'
 ssh_only = false
 ssh_symbol = " "
-aliases = {'{{ .chezmoi.hostname }}' = '{{ if eq .machine "work" }} {{ else }}󰨡  {{ end }}'}
+{{- $hostIcon := get (dict "darwin" "\uf179" "ubuntu" "\uf31b" "debian" "\uf306" "steamos" "\U000f04d3") .osid | default "\uf31a" }}
+aliases = {'{{ .chezmoi.hostname }}' = '{{ if eq .machine "work" }} {{ else }}{{ $hostIcon }}  {{ .chezmoi.hostname }}{{ end }}'}
 
 [java]
 symbol = " "
