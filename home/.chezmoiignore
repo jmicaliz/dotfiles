@@ -12,7 +12,7 @@ Library
 .azure
 {{- end }}
 {{- if ne .machine "work" }}
-.claude/hooks/ado-branch-context.py
+.claude/hooks/linear-branch-context.py
 .claude/hooks/databricks-profile-guard.py
 .claude/hooks/git-commit-guard.py
 .claude/hooks/python-quality.py

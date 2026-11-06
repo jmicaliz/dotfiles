@@ -36,21 +36,13 @@ done
 
 Treat commits as memory-joggers, not the post itself. Ask if there are repos outside these directories to include.
 
-**Azure DevOps: my work items and PRs (via the `ado-mcp` MCP).** This is a primary source for both the post and the capex split. Pull my activity for the last ~7 days:
-
-- `wit_my_work_items`: work items assigned to me (what I progressed or closed).
-- `repo_list_pull_requests_by_project` (or `repo_list_pull_requests_by_repo`): PRs I created/completed; and `repo_search_commits` for my commits.
-- `work_list_team_iterations`: the current/next iteration, to help frame "next week".
-
-`ado-mcp` needs a fresh sign-in each session: call `auth_status`, and if not authenticated call `auth_login` and hand me the SSO link, then wait for me to sign in. If a tool needs a project or team, reuse the last one I named or ask. Recent context: project **R37 AR Follow Up App**, team **R37 AR Follow Up App Team** (not "Data"); take the current iteration from `work_list_team_iterations`. Work-item *types* also inform the capex split in Step 5: design/spec/planning items lean Requirements/Design; dev tasks and PRs lean Coding.
-
-**Linear: my issues and cycle (via the `linear` MCP).** A second work-item source alongside ADO; pull both, since some work is tracked in only one. For the last ~7 days:
+**Linear: my issues and cycle (via the `linear` MCP).** This is a primary source for both the post and the capex split. For the last ~7 days:
 
 - `list_issues`: issues assigned to me (assignee `me`, `updatedAt: -P7D`). "Updated" includes edits and grooming, so use `completedAt`/`startedAt` to tell real progress from planning; grooming a batch of unstarted issues counts as Requirements/Design, not shipped work.
 - `list_comments`: my comments on those issues, for decisions and context not visible from state changes.
 - `list_cycles`: the current/next cycle, to help frame "next week". It needs a `teamId`; take it from the issue results.
 
-If an issue mirrors an ADO item, merge them into one entry rather than double-counting. Issue labels and titles inform the capex split the same way ADO work-item types do.
+Issue labels and titles also inform the capex split in Step 5: design/spec/planning issues lean Requirements/Design; dev tasks and PRs lean Coding.
 
 **Slack: my recent activity (via the Slack MCP).** My Slack user id is `{{ includeTemplate "keeper-field" (list .keeper.dotfiles "SLACK_USER_ID") }}`. Pull my last 7 days with `slack_search_public_and_private` using `from:<@{{ includeTemplate "keeper-field" (list .keeper.dotfiles "SLACK_USER_ID") }}> after:<YYYY-MM-DD>` (sort by timestamp), plus a few topical searches for anything I mention. This surfaces threads, decisions, and who I collaborated with. My prior weekly update lands in **{{ includeTemplate "keeper-field" (list .keeper.dotfiles "STATUS_SLACK") }}** (manager: {{ includeTemplate "keeper-field" (list .keeper.dotfiles "MANAGER_NAME") }}) in this same two-prompt format, which is good for voice and continuity. Use `include_context:false` and small `limit`s; topical searches can overflow, so narrow with filters.
 
@@ -99,7 +91,7 @@ Use the `playwright-cli` skill to **READ** the folder and page, never to edit or
 Then draft my contribution so it slots cleanly into the right project/workstream section(s). The audience is **high-level and non-technical** (leadership and stakeholders), a different audience from the Slack post, so rewrite; don't reuse the Slack bullets:
 
 - **Match the page's existing structure and style.** Put my work under the project/workstream heading(s) it belongs to; mirror the wording, formatting, and dating pattern the page already uses rather than imposing my own. If my work doesn't obviously map to an existing section, ask me which workstream it belongs under.
-- **Plain, non-technical language.** No tool names, ticket numbers, repo names, or engineering jargon (say "the follow-up app," not "the ADO board" or "the ingest pipeline"). Frame everything as business outcomes and progress: what got better, what's unblocked, and what it means for the team or the product.
+- **Plain, non-technical language.** No tool names, ticket numbers, repo names, or engineering jargon (say "the follow-up app," not "the Linear board" or "the ingest pipeline"). Frame everything as business outcomes and progress: what got better, what's unblocked, and what it means for the team or the product.
 - For each relevant workstream, cover **what was done this week** and **what's planned for next week**, keeping it skimmable.
 
 Draw on the same evidence gathered in Step 2, but translate it up a level: group related work into themes, drop the implementation detail, and lead with why it matters.

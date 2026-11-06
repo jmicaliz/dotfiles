@@ -48,8 +48,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$HOME/.claude/hooks/ado-branch-context.py\"",
-            "statusMessage": "Resolving ADO ticket from branch",
+            "command": "python3 \"$HOME/.claude/hooks/linear-branch-context.py\"",
+            "statusMessage": "Resolving Linear issue from branch",
             "timeout": 15
           }
         ]

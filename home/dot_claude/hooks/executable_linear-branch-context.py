@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""SessionStart: surface the ADO ticket implied by the current branch name.
+"""SessionStart: surface the Linear issue implied by the current branch name.
 
-Branches are named after their ADO work item (e.g. 382692-automate-foundry-ingestion),
-so the ticket ID is already on disk. Injecting it up front means it survives compaction
-and is available to /create-pr and /push without being re-derived.
+Branches are named after their Linear issue (e.g. engn-142-databricks-runs, see the
+`worktree` skill), so the issue ID is already on disk. Injecting it up front means it
+survives compaction and is available to /create-pr and /push without being re-derived.
 """
 
 import json
@@ -11,8 +11,7 @@ import re
 import subprocess
 import sys
 
-TICKET = re.compile(r"^(?:ado[-_/]?)?(?P<id>\d{5,7})[-_/]?(?P<slug>.*)$", re.IGNORECASE)
-ADO_PROJECT = "R37 AR Follow Up App"
+ISSUE = re.compile(r"^(?:[\w.-]+/)?(?P<team>[a-z][a-z0-9]{1,9})-(?P<number>\d+)(?:[-_/]|$)", re.IGNORECASE)
 
 
 def git(cwd: str, *args: str) -> str:
@@ -38,18 +37,14 @@ def main() -> None:
 
     lines = [f"Current branch: {branch}"]
 
-    match = TICKET.match(branch)
+    match = ISSUE.match(branch)
     if match:
-        ticket = match.group("id")
-        lines.append(f"ADO work item: {ticket} (inferred from the branch name)")
-        lines.append(f'- Look it up in Azure DevOps project "{ADO_PROJECT}" if details are needed.')
-        lines.append(
-            f"- Use {ticket} for PR titles and ADO updates rather than re-deriving it."
-        )
+        issue = f"{match.group('team').upper()}-{match.group('number')}"
+        lines.append(f"Linear issue: {issue} (inferred from the branch name)")
+        lines.append("- Look it up with `mcp__linear__get_issue` if details are needed.")
+        lines.append(f"- Use {issue} for PR titles and Linear updates rather than re-deriving it.")
     else:
-        lines.append(
-            "Branch name carries no ADO ticket ID; ask before assuming one for PRs."
-        )
+        lines.append("Branch name carries no Linear issue ID; ask before assuming one for PRs.")
 
     dirty = git(cwd, "status", "--porcelain")
     if dirty:

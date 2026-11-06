@@ -3,8 +3,10 @@
 
 Bash(git commit:*) and Bash(git push:*) are broadly allowed, which a glob
 permission cannot narrow. This enforces the two invariants that matter:
-  1. never commit directly to master/main (work happens on ADO ticket branches)
+  1. never commit directly to master/main (work happens on a branch)
   2. never force-push the default branch
+A commit chained with && after `git switch -c`/`git checkout -b` counts as
+being on the new branch, since HEAD is read before the command runs.
 """
 
 import json
@@ -17,6 +19,12 @@ DEFAULT_BRANCHES = {"master", "main"}
 
 GIT_COMMIT = re.compile(r"(?:^|[;&|(]|\n)\s*(?:\w+=\S+\s+)*git\s+(?:-\S+\s+)*commit\b")
 GIT_PUSH = re.compile(r"(?:^|[;&|(]|\n)\s*(?:\w+=\S+\s+)*git\s+(?:-\S+\s+)*push\b")
+GIT_NEW_BRANCH = re.compile(
+    r"(?:^|[;&|(]|\n)\s*(?:\w+=\S+\s+)*git\s+(?:-\S+\s+)*"
+    r"(?:switch\s+(?:-c|-C|--create|--force-create)|checkout\s+(?:-b|-B))"
+    r"\s+(?P<branch>[^\s;&|)]+)"
+)
+UNCHAINED = re.compile(r";|\n|\|\||(?<!\|)\|(?!\|)")
 FORCE = re.compile(r"(?:^|\s)(?:--force(?!-with-lease)|-f)(?:\s|$)")
 TARGET_DIR = re.compile(r"^\s*cd\s+(?P<dir>\S+)\s*&&|git\s+-C\s+(?P<gitdir>\S+)")
 
@@ -55,6 +63,17 @@ def current_branch(cwd: str) -> str:
     return result.stdout.strip() if result.returncode == 0 else ""
 
 
+def branch_at_commit(command: str, commit_end: int, branch: str) -> str:
+    """Return the branch a commit lands on when chained with && after creating one."""
+    created = [m for m in GIT_NEW_BRANCH.finditer(command) if m.end() <= commit_end]
+    if not created:
+        return branch
+    last = created[-1]
+    if UNCHAINED.search(command[last.end() : commit_end]):
+        return branch
+    return last.group("branch").strip("'\"")
+
+
 def main() -> None:
     try:
         payload = json.load(sys.stdin)
@@ -66,17 +85,19 @@ def main() -> None:
         sys.exit(0)
 
     cwd = payload.get("cwd") or ""
-    is_commit = bool(GIT_COMMIT.search(command))
+    commit = GIT_COMMIT.search(command)
+    is_commit = bool(commit)
     is_push = bool(GIT_PUSH.search(command))
     if not (is_commit or is_push):
         sys.exit(0)
 
     branch = current_branch(target_dir(command, cwd))
 
-    if is_commit and branch in DEFAULT_BRANCHES:
+    commit_branch = branch_at_commit(command, commit.end(), branch) if commit else ""
+    if commit_branch in DEFAULT_BRANCHES:
         block(
-            f"Refusing to commit directly to {branch}. Create a branch named after the "
-            "ADO ticket first (see the `worktree` skill), then commit there."
+            f"Refusing to commit directly to {commit_branch}. "
+            "Create a branch first, then commit there."
         )
 
     if is_push and FORCE.search(command) and branch in DEFAULT_BRANCHES:
