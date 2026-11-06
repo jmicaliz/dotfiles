@@ -87,6 +87,7 @@ brew "databricks/tap/databricks"
 brew "{{ $pfeTap }}/pfe"
 {{- if eq .chezmoi.os "darwin" }}
 cask "dotnet-runtime"
+cask "handy"
 cask "microsoft-azure-storage-explorer"
 {{- end }}
 {{- end }}
