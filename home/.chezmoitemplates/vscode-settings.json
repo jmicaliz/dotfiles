@@ -33,6 +33,7 @@
         "terminal.background": "#002b36"
     },
     "workbench.editor.empty.hint": "hidden",
+    "workbench.secondarySideBar.defaultVisibility": "hidden",
     "extensions.ignoreRecommendations": false,
     "[yaml]": {
         "editor.tabSize": 4,
