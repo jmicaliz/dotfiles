@@ -1,0 +1,74 @@
+---
+description: Fill in an interview's grading rubric from the candidate folder, interview guide, and call transcript, with a reasoning map and a hire recommendation.
+argument-hint: <candidate-folder>
+---
+
+Fill in my interview feedback for one candidate and one interview, then work through it with me conversationally.
+
+The candidate folder is `$ARGUMENTS`. If it is empty or missing, ask me for the path before doing anything else.
+
+Never contact the candidate, the recruiter, or anyone else. The only files you write are the rubric (in place) and `reasoning.md` in the candidate folder.
+
+## Step 1: Gather inputs
+
+**Candidate folder.** List it and sort the files by role:
+
+- **Resume:** PDF or DOCX. Read PDFs directly; convert DOCX with `textutil -convert txt -stdout <file>`.
+- **Rubric:** the markdown file with grading criteria and my written notes. This is the file you fill in. If more than one markdown file could be the rubric, ask me which.
+- **Recruiter form:** usually pasted text, in a `.txt` or `.md` file. Use it only to learn what the recruiter needs answered; never fill it in. If there is none, ask me whether to paste it now or skip it.
+- **Other artifacts:** images (diagrams, whiteboard photos) and anything else. Read images directly.
+
+Tell me how you classified each file before going further, and flag anything you couldn't place.
+
+**Interview guide.** Guides live outside the candidate folder, one PDF per interview type, in `'{{ includeTemplate "keeper-field" (list .keeper.dotfiles "INTERVIEW_GUIDES_PATH") }}'`. List that directory and pick the guide whose interview type matches the rubric's title or headings. If none matches, more than one could, or the directory is missing, ask me; never score without a guide.
+
+Read the guide and extract the questions, how each is asked, and what separates strong, adequate, and weak answers.
+
+**Transcript and AI summary.** These come from my knowledge base, and the transcript usually has no candidate name or meeting title. WebFetch:
+
+```text
+https://{{ includeTemplate "keeper-field" (list .keeper.kb "RB_HOST") }}/r/$RB_TOKEN/search?q=<url-encoded-query>&k=6
+```
+
+Search for recent interview calls (for example `interview transcript`, `system design interview`, and terms from the interview guide's questions), then rank the results by the date in their note paths. Show me the two or three most recent candidates with their paths, dates, and an opening line, and **wait for me to confirm which one is this interview** before scoring anything. Then pull more chunks from that note with follow-up queries until you have the full transcript and summary.
+
+## Step 2: Weigh the evidence
+
+Sources rank in this order:
+
+1. My written notes in the rubric.
+2. The transcript.
+3. The AI summary, which is only a pointer to where to look in the transcript, never evidence on its own.
+
+When sources disagree, don't quietly pick one; record the conflict in the reasoning map and raise it with me in Step 5.
+
+Judge each rubric item against the interview guide's description of a good answer, not against general impressions. Use the resume only for context (claimed experience to probe, level expectations), never as evidence of performance in the interview.
+
+## Step 3: Fill in the rubric in place
+
+Edit the rubric markdown file directly. Keep its existing structure, headings, and my notes untouched; only fill in scores and feedback fields. Feedback should be specific and behavioral (what the candidate said or did), written so the hiring committee can read it without the transcript.
+
+Fill in an overall hire / no-hire recommendation (and level, if the rubric or recruiter form asks for one). Mark it as proposed in our conversation, not in the file, so I know it's my call to confirm.
+
+## Step 4: Write the reasoning map
+
+Write `reasoning.md` in the candidate folder. For each rubric item:
+
+- **Score** given.
+- **Criterion:** what the interview guide says a good answer looks like.
+- **Evidence:** short quotes or paraphrases, each tagged with its source (notes, transcript, artifact filename).
+- **Counter-evidence or gaps:** what pulls the score down, or what wasn't covered.
+- **Confidence:** high, medium, or low, with one line on why.
+
+End with the overall recommendation and the three or four items that drove it, plus a short section answering each question the recruiter form asks.
+
+## Step 5: Review with me
+
+Summarize the scores and recommendation in a few lines, then ask follow-up questions where they would change a score:
+
+- Low-confidence items.
+- Conflicts between my notes and the transcript.
+- Rubric items with thin or no evidence.
+- Anything the recruiter form needs that the evidence doesn't answer.
+
+When I add my own information or push back, update both the rubric and `reasoning.md` to match, and tell me which scores moved and why. Keep going until I say it's done.

@@ -1,0 +1,140 @@
+#!/usr/bin/env python3
+"""Stand-in for `keeper` that fetches every record chezmoi needs in one Commander session."""
+
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+
+KEEPER = os.environ.get("KEEPER_REAL_COMMAND", "keeper")
+CACHE_ROOT = Path(tempfile.gettempdir()) / f"keeper-cached-{os.getuid()}"
+MAX_AGE_SECONDS = 5 * 60
+UID = r"[A-Za-z0-9_-]{22}"
+
+
+def run_keeper(args: list[str]) -> subprocess.CompletedProcess[str]:
+    return subprocess.run([KEEPER, "--batch-mode", *args], capture_output=True, text=True, stdin=subprocess.DEVNULL)
+
+
+def wanted_uids() -> list[str]:
+    data_dir = Path(os.environ.get("CHEZMOI_SOURCE_DIR", ".")) / ".chezmoidata"
+    patterns = {"keeper.yaml": rf":\s+({UID})\s*$", "secrets.yaml": rf"item:\s*({UID})\b"}
+    uids: list[str] = []
+    for name, pattern in patterns.items():
+        path = data_dir / name
+        if path.exists():
+            uids += re.findall(pattern, path.read_text(), re.MULTILINE)
+    return sorted(set(uids))
+
+
+def split_records(output: str) -> dict[str, dict]:
+    decoder = json.JSONDecoder()
+    records: dict[str, dict] = {}
+    pos = 0
+    while (pos := output.find("{", pos)) != -1:
+        try:
+            obj, end = decoder.raw_decode(output, pos)
+        except json.JSONDecodeError:
+            pos += 1
+            continue
+        if isinstance(obj, dict) and "record_uid" in obj:
+            records[obj["record_uid"]] = obj
+        pos = end
+    return records
+
+
+def sweep_stale() -> None:
+    if not CACHE_ROOT.exists():
+        return
+    for entry in CACHE_ROOT.iterdir():
+        try:
+            os.kill(int(entry.name), 0)
+            alive = time.time() - entry.stat().st_mtime < MAX_AGE_SECONDS
+        except (ValueError, ProcessLookupError, PermissionError):
+            alive = False
+        if not alive:
+            shutil.rmtree(entry, ignore_errors=True)
+
+
+def cache_dir() -> Path:
+    CACHE_ROOT.mkdir(mode=0o700, exist_ok=True)
+    CACHE_ROOT.chmod(0o700)
+    return CACHE_ROOT / str(os.getppid())
+
+
+def write_private(path: Path, text: str) -> None:
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(fd, "w") as handle:
+        handle.write(text)
+
+
+def prefetch(directory: Path) -> None:
+    uids = wanted_uids()
+    if not uids:
+        directory.mkdir(mode=0o700)
+        return
+    with tempfile.NamedTemporaryFile("w", suffix=".batch", delete=False) as batch:
+        batch.write("".join(f"get --format=json {uid}\n" for uid in uids))
+    try:
+        result = run_keeper(["run-batch", "-q", batch.name])
+    finally:
+        os.unlink(batch.name)
+    staging = Path(tempfile.mkdtemp(dir=CACHE_ROOT))
+    for uid, record in split_records(result.stdout).items():
+        write_private(staging / f"{uid}.json", json.dumps(record))
+    try:
+        staging.rename(directory)
+    except OSError:
+        shutil.rmtree(staging, ignore_errors=True)
+
+
+def cached_record(uid: str) -> dict | None:
+    directory = cache_dir()
+    if not directory.exists():
+        prefetch(directory)
+    path = directory / f"{uid}.json"
+    return json.loads(path.read_text()) if path.exists() else None
+
+
+def password_of(record: dict) -> str | None:
+    if "password" in record:
+        return record["password"]
+    for field in record.get("fields", []):
+        if field.get("type") == "password" and field.get("value"):
+            return field["value"][0]
+    return None
+
+
+def passthrough(args: list[str]) -> int:
+    os.execvp(KEEPER, [KEEPER, *args])
+    return 1
+
+
+def main(argv: list[str]) -> int:
+    if argv == ["--cleanup"]:
+        shutil.rmtree(CACHE_ROOT / str(os.getppid()), ignore_errors=True)
+        sweep_stale()
+        return 0
+    args = [a for a in argv if a != "--batch-mode"]
+    sweep_stale()
+    if len(args) == 3 and args[:2] == ["get", "--format=json"]:
+        record = cached_record(args[2])
+        if record is not None:
+            print(json.dumps(record))
+            return 0
+    elif len(args) == 2 and args[0] == "find-password":
+        record = cached_record(args[1])
+        password = password_of(record) if record else None
+        if password is not None:
+            print(password)
+            return 0
+    return passthrough(argv)
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

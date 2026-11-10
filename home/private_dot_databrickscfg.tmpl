@@ -2,16 +2,19 @@
 [DEFAULT]
 {{- range $name := list "prd" "prd-sp" "prp" "prp-sp" "dev" "tran" }}
 {{-   $uid := index $.keeper.databricks $name }}
+{{-   $sp := hasSuffix "-sp" $name }}
+{{- /* The Databricks CLI rewrites this file aligning keys per section; match it to avoid diffs. */}}
+{{-   $w := ternary 9 12 $sp }}
 
 [{{ $name }}]
-host         = {{ includeTemplate "keeper-field" (list $uid "HOST") }}
-{{-   if hasSuffix "-sp" $name }}
-client_id    = {{ includeTemplate "keeper-field" (list $uid "CLIENT_ID") }}
+{{ printf "%-*s" $w "host" }} = {{ includeTemplate "keeper-field" (list $uid "HOST") }}
+{{-   if $sp }}
+{{ printf "%-*s" $w "client_id" }} = {{ includeTemplate "keeper-field" (list $uid "CLIENT_ID") }}
 {{-   else }}
-account_id   = {{ includeTemplate "keeper-field" (list $uid "ACCOUNT_ID") }}
-workspace_id = {{ includeTemplate "keeper-field" (list $uid "WORKSPACE_ID") }}
+{{ printf "%-*s" $w "account_id" }} = {{ includeTemplate "keeper-field" (list $uid "ACCOUNT_ID") }}
+{{ printf "%-*s" $w "workspace_id" }} = {{ includeTemplate "keeper-field" (list $uid "WORKSPACE_ID") }}
 {{-   end }}
-auth_type    = {{ includeTemplate "keeper-field" (list $uid "AUTH_TYPE") }}
+{{ printf "%-*s" $w "auth_type" }} = {{ includeTemplate "keeper-field" (list $uid "AUTH_TYPE") }}
 {{- end }}
 
 [__settings__]
