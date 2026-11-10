@@ -16,6 +16,7 @@ Library
 .claude/hooks/databricks-profile-guard.py
 .claude/hooks/git-commit-guard.py
 .claude/hooks/python-quality.py
+.claude/commands/interview-feedback.md
 .claude/commands/pr-review.md
 .claude/commands/review-digest.md
 .claude/commands/weekly-update.md

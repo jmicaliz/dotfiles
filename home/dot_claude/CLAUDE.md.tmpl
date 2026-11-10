@@ -47,7 +47,7 @@ For any Python work, existing repos or new projects alike, follow the `python-co
 
 For anything about my notes, 1:1s, engineering log, or synced call transcripts, WebFetch:
 
-  `https://api.rubybenry.fyi/r/$RB_TOKEN/search?q=<url-encoded-query>&k=6`
+  `https://{{ includeTemplate "keeper-field" (list .keeper.kb "RB_HOST") }}/r/$RB_TOKEN/search?q=<url-encoded-query>&k=6`
 
 `$RB_TOKEN` holds the token. Response is plain Markdown blocks separated by `---`. Retrieval only: synthesize the answer yourself from the chunks and cite the note paths shown.
 {{- end }}

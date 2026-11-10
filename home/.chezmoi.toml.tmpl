@@ -18,6 +18,18 @@ secretsBackend = {{ if eq $machine "work" }}"keeper"{{ else }}"bitwarden"{{ end 
 
 [bitwarden]
 unlock = "auto"
+{{- if eq $machine "work" }}
+{{-   $keeperCached := joinPath .chezmoi.workingTree "scripts" "keeper-cached" }}
+
+[keeper]
+command = {{ $keeperCached | quote }}
+{{-   range list "apply" "diff" "status" "cat" "execute-template" "init" "update" }}
+
+[hooks.{{ . }}.post]
+command = {{ $keeperCached | quote }}
+args = ["--cleanup"]
+{{-   end }}
+{{- end }}
 
 [diff]
 exclude = ["scripts"]
