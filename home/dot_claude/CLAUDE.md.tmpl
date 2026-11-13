@@ -32,6 +32,17 @@ Docstrings: one line, imperative, only when the name plus signature genuinely le
 
 Length cap: one line per comment. If it needs a paragraph, it is documentation, put it in the README or the PR.
 
+## Reuse before you add
+
+Look in the repo's shared modules and config first.
+
+- Before adding a constant, config value, helper, macro, or fixture, search for an existing one and import it. If the new code can't reach it, move it somewhere both can.
+- A test that keeps two copies in sync means there should be one copy: merge them. Sync checks are only for state outside the repo and for generated files.
+- When two functions, macros, or models differ by one detail, make that detail a parameter.
+- When the change works, reread the diff next to the code around it and fold in anything that repeats or nearly repeats existing code.
+- Only merge duplication that exists now. Don't add an abstraction for a single caller.
+- A small consolidation the change needs goes in the same PR. A refactor that touches unrelated callers goes in its own PR, merged first.
+
 ## Pull requests
 
 Use the `create-pr` command to open PRs. Whatever writes the body, never include: a file-by-file walkthrough or table of changed files (git shows that), restated diff content or before/after snippets, or emoji headings, "Overview"/"Background" preamble, and closing summary paragraphs.
