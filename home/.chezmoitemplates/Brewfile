@@ -27,6 +27,8 @@ brew "markdownlint-cli2"
 brew "ncdu"
 brew "ripgrep"
 brew "tlrc"
+brew "unzip"
+brew "zip"
 
 # Development
 {{- if not .steamos }}

@@ -1,5 +1,10 @@
 #!/bin/bash
 set -uo pipefail
 [ -d "$HOME/.sdkman" ] && exit 0
+{{ if eq .chezmoi.os "darwin" -}}
+eval "$(/opt/homebrew/bin/brew shellenv)"
+{{- else -}}
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+{{- end }}
 echo "Installing SDKMAN!..."
 curl -s "https://get.sdkman.io?rcupdate=false" | bash
