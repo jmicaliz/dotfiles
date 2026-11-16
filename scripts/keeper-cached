@@ -84,8 +84,11 @@ def prefetch(directory: Path) -> None:
         result = run_keeper(["run-batch", "-q", batch.name])
     finally:
         os.unlink(batch.name)
+    records = split_records(result.stdout)
+    if not records:
+        return
     staging = Path(tempfile.mkdtemp(dir=CACHE_ROOT))
-    for uid, record in split_records(result.stdout).items():
+    for uid, record in records.items():
         write_private(staging / f"{uid}.json", json.dumps(record))
     try:
         staging.rename(directory)
@@ -99,6 +102,15 @@ def cached_record(uid: str) -> dict | None:
         prefetch(directory)
     path = directory / f"{uid}.json"
     return json.loads(path.read_text()) if path.exists() else None
+
+
+def interactive_record(uid: str) -> dict | None:
+    """Fetch one record with the terminal attached so Keeper can prompt for SSO login."""
+    result = subprocess.run([KEEPER, "get", "--format=json", uid], stdout=subprocess.PIPE, text=True)
+    record = split_records(result.stdout).get(uid)
+    if record is None:
+        sys.stderr.write(result.stdout)
+    return record
 
 
 def password_of(record: dict) -> str | None:
@@ -123,12 +135,13 @@ def main(argv: list[str]) -> int:
     args = [a for a in argv if a != "--batch-mode"]
     sweep_stale()
     if len(args) == 3 and args[:2] == ["get", "--format=json"]:
-        record = cached_record(args[2])
+        record = cached_record(args[2]) or interactive_record(args[2])
         if record is not None:
             print(json.dumps(record))
             return 0
+        return 1
     elif len(args) == 2 and args[0] == "find-password":
-        record = cached_record(args[1])
+        record = cached_record(args[1]) or interactive_record(args[1])
         password = password_of(record) if record else None
         if password is not None:
             print(password)
