@@ -1,6 +1,7 @@
 {
     "telemetry.telemetryLevel": "off",
     "security.workspace.trust.untrustedFiles": "open",
+    "application.shellEnvironmentResolutionTimeout": 30,
     "terminal.integrated.enableMultiLinePasteWarning": false,
     "terminal.integrated.fontFamily": "MesloLGS Nerd Font",
     "terminal.integrated.defaultProfile.linux": "zsh",
