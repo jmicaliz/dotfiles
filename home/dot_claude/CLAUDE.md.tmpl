@@ -54,6 +54,12 @@ When I ask for a PR comment, output it as raw markdown in a code block so I can 
 For any Python work, existing repos or new projects alike, follow the `python-conventions` skill (uv, pyproject.toml, Makefile targets, Ruff, mypy, pytest, Click, loguru).
 {{- if eq .machine "work" }}
 
+## Databricks profiles
+
+- `prp` can read all `prd` data (tables, schemas) but not `prd` jobs. Default to `prp` for reading data, including production data.
+- `prd` is for reading production jobs (runs, definitions, logs).
+- `*-sp` profiles (`prd-sp`, `prp-sp`) are for edits to resources owned by our service principals.
+
 ## Personal knowledge base
 
 For anything about my notes, 1:1s, engineering log, or synced call transcripts, WebFetch:
