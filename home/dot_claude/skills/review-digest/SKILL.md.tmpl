@@ -1,5 +1,6 @@
 ---
 description: DM me a digest of my PRs posted in {{ includeTemplate "keeper-field" (list .keeper.dotfiles "PFE_SLACK") }} that are still open and unapproved.
+disable-model-invocation: true
 ---
 
 Build a short digest of my PRs that still need review and DM it to me in Slack. Lookback window is `$ARGUMENTS` (e.g. `7d`, `30d`), default 14 days.

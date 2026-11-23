@@ -1,6 +1,6 @@
 # Claude files that pfe installs on work machines. Work skips these and warns on drift; `make sync-work` copies them here for personal machines.
 claudeShared:
-  - commands/self-review.md
+  - skills/self-review
   - skills/adr
   - skills/python-conventions
   - skills/worktree

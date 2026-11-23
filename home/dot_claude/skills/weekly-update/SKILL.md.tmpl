@@ -1,6 +1,7 @@
 {{- $tenant := includeTemplate "keeper-field" (list .keeper.atlassian "ATLASSIAN_HOST") | splitList "." | first -}}
 ---
 description: Draft my weekly Slack update, a Confluence status update, and a rough capex timesheet estimate (Requirements/Design vs Coding).
+disable-model-invocation: true
 ---
 
 Produce three deliverables for me:

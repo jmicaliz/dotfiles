@@ -79,10 +79,10 @@ lint-fix: ## Auto-fix Markdown lint issues
 	markdownlint-cli2 --fix "**/*.md" "**/*.md.tmpl"
 
 sync-work: ## Copy pfe-installed Claude files from this work machine into the source, then guard
-	@for f in $$(chezmoi execute-template '{{ range .claudeShared }}{{ . }} {{ end }}'); do \
-		mkdir -p "$$(dirname "home/dot_claude/$$f")"; \
-		cp -R "$$HOME/.claude/$$f" "$$(dirname "home/dot_claude/$$f")/"; \
-		echo "synced $$f"; \
+	@for f in $$(chezmoi --source "$(CURDIR)" execute-template '{{ range .claudeShared }}{{ . }} {{ end }}'); do \
+		mkdir -p "$$(dirname "home/dot_claude/$$f")" && \
+		cp -R "$$HOME/.claude/$$f" "$$(dirname "home/dot_claude/$$f")/" && \
+		echo "synced $$f" || exit 1; \
 	done
 	@git ls-files -mo --exclude-standard -z home/dot_claude | xargs -0 python3 $(GUARD)
 

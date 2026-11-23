@@ -16,15 +16,15 @@ Library
 .claude/hooks/databricks-profile-guard.py
 .claude/hooks/git-commit-guard.py
 .claude/hooks/python-quality.py
-.claude/commands/interview-feedback.md
-.claude/commands/pr-review.md
-.claude/commands/review-digest.md
-.claude/commands/weekly-update.md
+.claude/skills/interview-feedback
+.claude/skills/pr-review
+.claude/skills/review-digest
+.claude/skills/weekly-update
 {{- end }}
 {{- if eq .machine "work" }}
-.claude/commands/create-pr.md
-.claude/commands/push.md
-.claude/commands/quick-self-review.md
+.claude/skills/create-pr
+.claude/skills/push
+.claude/skills/quick-self-review
 {{- range .claudeShared }}
 .claude/{{ . }}
 {{- end }}
