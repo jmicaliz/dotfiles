@@ -3,7 +3,10 @@
 src="{{ .chezmoi.sourceDir }}/dot_claude"
 for f in{{ range .claudeShared }} {{ . | quote }}{{ end }}; do
     live="$HOME/.claude/$f"
-    [ -e "$live" ] || continue
+    if [ ! -e "$live" ]; then
+        echo "~/.claude/$f is missing, so drift can't be checked. pfe may not install it at this path yet."
+        continue
+    fi
     diff -rq "$live" "$src/$f" >/dev/null 2>&1 && continue
     echo "~/.claude/$f differs from dotfiles. Run 'make sync-work' to update personal machines."
 done
