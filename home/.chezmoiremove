@@ -1,0 +1,11 @@
+.claude/commands/interview-feedback.md
+.claude/commands/organize-permissions.md
+.claude/commands/pr-review.md
+.claude/commands/review-digest.md
+.claude/commands/weekly-update.md
+{{- if ne .machine "work" }}
+.claude/commands/create-pr.md
+.claude/commands/push.md
+.claude/commands/quick-self-review.md
+.claude/commands/self-review.md
+{{- end }}
